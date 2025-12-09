@@ -1,23 +1,26 @@
 # NorChain Master Repository
 
-The central documentation and configuration hub for the NorChain blockchain ecosystem.
+**AI-Powered Product Manager Hub** for the NorChain blockchain ecosystem.
 
 ## Overview
 
-NorChain is an EVM-compatible blockchain designed for Real World Asset (RWA) tokenization, featuring:
+This repository serves as the central orchestration hub for 50+ NorChain repositories. The PM Agent has 30+ years of blockchain/web3 expertise encoded and controls all development across the ecosystem.
 
-- **PoSA Consensus**: Proof of Staked Authority with ~3 second finality
-- **Native Gas Token**: NOR utility token for transaction fees
-- **Security Tokens**: PM-EQ (PureMinerals) and NV-EQ (NorVège) for RWA representation
-- **SmartPay**: Compliant payment processing for security token purchases
+### Key Features
+
+- **Master PM Agent**: 30+ years blockchain expertise, strategic planning, risk assessment
+- **5 Domain Agents**: Blockchain, Contracts, Backend, Frontend, Mobile specialists
+- **7 PM Commands**: Planning, prioritization, sprint management, delegation
+- **5 GitHub Actions**: Cross-repo automation for issues, standards, milestones
+- **Hybrid Automation**: Low-risk automated, high-risk requires approval
 
 ## Token Classification
 
-| Token | Type | Tradability | KYC Required |
-|-------|------|-------------|--------------|
-| **NOR** | Utility | Public exchanges | No |
-| **PM-EQ** | Security | Private P2P only | Yes |
-| **NV-EQ** | Security | Private P2P only | Yes |
+| Token | Type | Tradability | KYC | Compliance |
+|-------|------|-------------|-----|------------|
+| **NOR** | Utility | Public | Optional | Standard |
+| **PM-EQ** | Security | Private Only | Required | Full Review |
+| **NV-EQ** | Security | Private Only | Required | Full Review |
 
 ## Strategy
 
@@ -25,90 +28,146 @@ NorChain is an EVM-compatible blockchain designed for Real World Asset (RWA) tok
 
 Security tokens operate as private placements with full KYC/AML compliance. NorChain never handles FIAT—all currency conversion happens through regulated on-ramp partners.
 
+## PM Agent Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│            NORCHAIN-PM-AGENT (Master)               │
+│         30+ Years Blockchain Expertise              │
+│   Strategic Control • Orchestration • Compliance    │
+└───────────────────────┬─────────────────────────────┘
+                        │
+     ┌──────────────────┼──────────────────┐
+     │                  │                  │
+     ▼                  ▼                  ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│ Blockchain  │  │  Contract   │  │   Backend   │
+│   Agent     │  │    Agent    │  │    Agent    │
+│ (Go, PoSA)  │  │ (Solidity)  │  │  (NestJS)   │
+└─────────────┘  └─────────────┘  └─────────────┘
+     │                  │                  │
+     ▼                  ▼                  ▼
+┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+│  Frontend   │  │   Mobile    │  │   50+ Repos │
+│   Agent     │  │    Agent    │  │  Controlled │
+│ (Next.js)   │  │(Swift/Kotlin)│  │             │
+└─────────────┘  └─────────────┘  └─────────────┘
+```
+
+## PM Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/pm-plan <feature>` | Generate implementation plan with tasks, dependencies, risks |
+| `/pm-review <pr>` | Review PR for architecture, compliance, standards |
+| `/pm-prioritize` | Prioritize backlog using RICE scoring |
+| `/pm-sprint` | Plan next sprint based on dependencies |
+| `/pm-status` | Cross-repository status dashboard |
+| `/pm-risk` | Risk assessment for current phase |
+| `/pm-delegate <task>` | Assign task to appropriate domain agent |
+
+## Domain Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/norchain-status` | Ecosystem status overview |
+| `/norchain-phase <n>` | Phase-specific context |
+| `/norchain-task <id>` | Task details and context |
+| `/norchain-compliance` | Compliance check |
+| `/norchain-repo <name>` | Repository information |
+| `/norchain-contract <name>` | Smart contract details |
+| `/norchain-init <type>` | Initialize new repository |
+| `/smartpay <action>` | SmartPay integration helpers |
+
 ## Development Roadmap
 
-| Phase | Focus | Status |
-|-------|-------|--------|
-| 1 | Blockchain Core | Planned |
-| 2 | Explorer | Planned |
-| 3 | Smart Contracts | Planned |
-| 4 | Wallets | Planned |
-| 5 | SmartPay | Planned |
-| 6 | RWA Portals | Planned |
-| 7 | Admin Dashboard | Planned |
-| 8 | Coinbase Integration | Planned |
-| 9 | Documentation | Planned |
-| 10 | Compliance | Planned |
+| Phase | Focus | Key Repos | Status |
+|-------|-------|-----------|--------|
+| 1 | Blockchain Core | norchain-node, norchain-genesis | Planned |
+| 2 | Explorer | norchain-explorer | Planned |
+| 3 | Smart Contracts | norchain-contracts | Planned |
+| 4 | Wallets | norchain-wallet-* | Planned |
+| 5 | SmartPay | norchain-services, norchain-payments | Planned |
+| 6 | RWA Portals | norchain-portal | Planned |
+| 7 | Admin Dashboard | norchain-admin | Planned |
+| 8 | Coinbase | norchain-exchange | Planned |
+| 9 | Documentation | norchain-docs | Planned |
+| 10 | Compliance | norchain-compliance | Planned |
+
+## GitHub Actions Automation
+
+| Workflow | Purpose | Trigger |
+|----------|---------|---------|
+| `sync-specs.yml` | Sync docs/templates to child repos | Push to docs/ |
+| `orchestrate-issues.yml` | Auto-classify and label issues | Issue created |
+| `enforce-standards.yml` | PR compliance and code checks | PR opened |
+| `track-milestones.yml` | Daily metrics and status updates | Daily cron |
+| `init-repo.yml` | Initialize new repositories | Manual dispatch |
 
 ## Repository Structure
 
 ```
 norchain-master/
-├── docs/
-│   ├── ROADMAP.md                 # 10-phase development plan
-│   ├── LEGAL_COMPLIANCE_ROADMAP.md # MiCA-safe strategy
-│   ├── DEVELOPER_TASKS.md         # 100+ tasks by role
-│   ├── REPOSITORY_STRUCTURE.md    # 50+ repo layouts
-│   └── repositories/              # Individual repo specs
 ├── .claude/
-│   ├── agents/                    # Domain-specific AI agents
-│   ├── commands/                  # Custom slash commands
-│   ├── skills/                    # Reusable skill definitions
-│   ├── hooks/                     # Development hooks
-│   └── mcp/                       # MCP tool configurations
-└── CLAUDE.md                      # AI assistant guidance
+│   ├── agents/
+│   │   ├── norchain-pm-agent.md        # Master PM Agent
+│   │   ├── norchain-blockchain-agent.md
+│   │   ├── norchain-contract-agent.md
+│   │   ├── norchain-backend-agent.md
+│   │   ├── norchain-frontend-agent.md
+│   │   └── norchain-mobile-agent.md
+│   ├── commands/
+│   │   ├── pm-plan.md
+│   │   ├── pm-review.md
+│   │   ├── pm-prioritize.md
+│   │   ├── pm-sprint.md
+│   │   ├── pm-status.md
+│   │   ├── pm-risk.md
+│   │   └── pm-delegate.md
+│   ├── skills/
+│   │   └── product-management.md
+│   ├── mcp/
+│   │   └── pm-tools.json
+│   └── settings.json
+├── .github/
+│   └── workflows/
+│       ├── sync-specs.yml
+│       ├── orchestrate-issues.yml
+│       ├── enforce-standards.yml
+│       ├── track-milestones.yml
+│       └── init-repo.yml
+├── templates/
+│   ├── github/
+│   │   ├── ISSUE_TEMPLATE/
+│   │   ├── PULL_REQUEST_TEMPLATE.md
+│   │   └── workflows/ci-base.yml
+│   └── docs/
+├── docs/
+│   ├── ROADMAP.md
+│   ├── LEGAL_COMPLIANCE_ROADMAP.md
+│   ├── DEVELOPER_TASKS.md
+│   └── REPOSITORY_STRUCTURE.md
+├── CLAUDE.md
+└── README.md
 ```
 
-## Documentation
+## Automation Levels
 
-| Document | Description |
-|----------|-------------|
-| [ROADMAP.md](docs/ROADMAP.md) | Development phases and deliverables |
-| [LEGAL_COMPLIANCE_ROADMAP.md](docs/LEGAL_COMPLIANCE_ROADMAP.md) | Regulatory strategy and compliance |
-| [DEVELOPER_TASKS.md](docs/DEVELOPER_TASKS.md) | Task breakdown by role and phase |
-| [REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md) | Complete ecosystem repository layout |
+### Automated (No Approval)
+- Create GitHub issues
+- Apply labels and milestones
+- Update issue status
+- Dependency analysis
+- Compliance checks
+- Sync specs to repos
+- Auto-label PRs
 
-## Claude Code Integration
-
-This repository includes comprehensive Claude Code configurations for AI-assisted development:
-
-### Slash Commands
-- `/norchain-status` - Project status overview
-- `/norchain-phase <n>` - Phase details
-- `/norchain-task <role>` - Tasks by developer role
-- `/norchain-compliance` - Compliance check
-- `/norchain-repo <name>` - Repository information
-- `/norchain-contract <type>` - Smart contract reference
-- `/norchain-init <type>` - Initialize new repository
-- `/smartpay` - Payment flow reference
-
-### Domain Agents
-- **norchain-blockchain-agent** - Go, PoSA, libp2p
-- **norchain-contract-agent** - Solidity, Hardhat
-- **norchain-backend-agent** - NestJS, PostgreSQL
-- **norchain-frontend-agent** - Next.js, React
-- **norchain-mobile-agent** - Swift, Kotlin
-
-### MCP Tools (79 tools across 11 servers)
-- Blockchain RPC methods
-- Validator/consensus operations
-- Smart contract development
-- Token operations
-- KYC/AML compliance
-- SmartPay payment processing
-- Certificate management
-- Block explorer API
-- Wallet development
-- Admin operations
-- Development utilities
-
-## Network Configuration
-
-| Network | Chain ID | RPC URL |
-|---------|----------|---------|
-| Mainnet | 8453 | https://rpc.norchain.org |
-| Testnet | 84531 | https://testnet-rpc.norchain.org |
-| Devnet | 31337 | http://localhost:8545 |
+### Requires Human Approval
+- Create/merge Pull Requests
+- Release deployments
+- Cross-repo breaking changes
+- Security token modifications
+- Production deployments
 
 ## Tech Stack
 
@@ -121,50 +180,84 @@ This repository includes comprehensive Claude Code configurations for AI-assiste
 | iOS | Swift 5.9+, SwiftUI |
 | Android | Kotlin 1.9+, Jetpack Compose |
 
+## Network Configuration
+
+| Network | Chain ID | RPC URL |
+|---------|----------|---------|
+| Mainnet | 8453 | https://rpc.norchain.org |
+| Testnet | 84531 | https://testnet-rpc.norchain.org |
+| Devnet | 31337 | http://localhost:8545 |
+
 ## Getting Started
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/NorChainOfficial/norchain-master.git
-   cd norchain-master
-   ```
+### Using Claude Code
 
-2. **Review the roadmap**
-   ```bash
-   cat docs/ROADMAP.md
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/NorChainOfficial/norchain-master.git
+cd norchain-master
 
-3. **Check available tasks**
-   ```bash
-   cat docs/DEVELOPER_TASKS.md
-   ```
+# Start Claude Code
+claude
 
-4. **Use Claude Code commands**
-   ```bash
-   claude
-   /norchain-status
-   ```
+# Get ecosystem status
+/pm-status
+
+# Plan a new feature
+/pm-plan "Add multi-signature wallet support"
+
+# Prioritize backlog
+/pm-prioritize
+
+# Plan next sprint
+/pm-sprint
+```
+
+### Initialize New Repository
+
+Use the `init-repo` workflow to create properly configured repositories:
+
+1. Go to Actions > "Initialize Repository"
+2. Fill in repository details
+3. Run workflow
+4. New repo is created with templates, labels, and initial issues
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [ROADMAP.md](docs/ROADMAP.md) | 10-phase development plan |
+| [LEGAL_COMPLIANCE_ROADMAP.md](docs/LEGAL_COMPLIANCE_ROADMAP.md) | MiCA-safe strategy |
+| [DEVELOPER_TASKS.md](docs/DEVELOPER_TASKS.md) | 100+ tasks by role |
+| [REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md) | 50+ repo layouts |
+
+## Critical Compliance Rules
+
+1. **Never** enable public trading for security tokens (PM-EQ, NV-EQ)
+2. **Never** integrate DEX/CEX for security tokens
+3. **Never** bypass KYC verification for security tokens
+4. **Never** handle FIAT directly
+5. **Always** maintain private placement status
+6. **Always** include pause mechanisms for security tokens
+7. **Always** require whitelist verification for transfers
 
 ## Related Repositories
 
-| Repository | Description |
-|------------|-------------|
-| norchain-node | Blockchain node implementation |
-| norchain-genesis | Genesis configuration |
-| norchain-contracts | Smart contracts |
-| norchain-explorer-api | Explorer backend |
-| norchain-explorer-web | Explorer frontend |
-| norchain-wallet-ios | iOS wallet |
-| norchain-wallet-android | Android wallet |
-| norchain-wallet-web | Web wallet |
-| norchain-smartpay-api | Payment processing |
-| norchain-portal-web | RWA investor portal |
+| Category | Repositories |
+|----------|--------------|
+| **Core Blockchain** | norchain-node, norchain-genesis, norchain-contracts |
+| **Infrastructure** | norchain-infra, norchain-sdk |
+| **Wallets** | norchain-wallet-core, norchain-wallet-ios, norchain-wallet-android, norchain-wallet-web |
+| **Services** | norchain-services, norchain-compliance-service, norchain-payments |
+| **Frontend** | norchain-explorer, norchain-portal, norchain-admin |
 
 ## Contributing
 
 1. Review [DEVELOPER_TASKS.md](docs/DEVELOPER_TASKS.md) for available tasks
-2. Check compliance requirements in [LEGAL_COMPLIANCE_ROADMAP.md](docs/LEGAL_COMPLIANCE_ROADMAP.md)
-3. Follow repository structure in [REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md)
+2. Check compliance in [LEGAL_COMPLIANCE_ROADMAP.md](docs/LEGAL_COMPLIANCE_ROADMAP.md)
+3. Follow [CONTRIBUTING.md](templates/docs/CONTRIBUTING.md) guidelines
+4. Use `/pm-plan` to generate implementation plan
+5. Submit PR and await PM review
 
 ## License
 
@@ -175,3 +268,7 @@ Proprietary - NorChain AS
 - Website: https://norchain.org
 - Explorer: https://explorer.norchain.org
 - Documentation: https://docs.norchain.org
+
+---
+
+*Powered by NorChain PM Agent - 30+ years blockchain expertise*

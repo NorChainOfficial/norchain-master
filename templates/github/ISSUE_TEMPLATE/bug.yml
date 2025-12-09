@@ -1,0 +1,139 @@
+name: Bug Report
+description: Report a bug in NorChain
+title: "[BUG] "
+labels: ["type-bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug Report
+        Thank you for reporting a bug! Please provide as much detail as possible.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - Critical (System down, data loss, security issue)
+        - High (Major feature broken)
+        - Medium (Feature partially broken)
+        - Low (Minor issue, workaround exists)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which component is affected?
+      options:
+        - Blockchain Node
+        - Smart Contracts
+        - Backend Services
+        - Frontend (Web)
+        - Mobile App (iOS)
+        - Mobile App (Android)
+        - Explorer
+        - Portal
+        - Wallet
+        - SDK
+        - Infrastructure
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear description of the bug
+      placeholder: When I try to... it does... instead of...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the bug
+      placeholder: |
+        1. Go to...
+        2. Click on...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What should happen?
+      placeholder: I expected...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happens?
+      placeholder: Instead, I see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Relevant environment information
+      placeholder: |
+        - OS: [e.g., macOS 14.0, Ubuntu 22.04]
+        - Browser: [e.g., Chrome 120]
+        - Node version: [e.g., 20.10.0]
+        - Network: [e.g., Devnet, Testnet]
+      render: markdown
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Error Messages
+      description: Any relevant logs or error messages
+      placeholder: Paste logs here...
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security Impact
+      description: Does this bug have security implications?
+      options:
+        - label: This bug may expose sensitive data
+        - label: This bug may allow unauthorized access
+        - label: This bug affects token/funds handling
+        - label: This bug affects KYC/compliance
+        - label: No security impact identified
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: Is there a workaround for this bug?
+      placeholder: Currently, you can work around this by...
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or references
+      placeholder: Add any other context here...
+    validations:
+      required: false

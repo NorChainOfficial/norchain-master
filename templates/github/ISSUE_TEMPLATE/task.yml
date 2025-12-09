@@ -1,0 +1,140 @@
+name: Task
+description: Create a development task
+title: "[TASK] "
+labels: ["type-task"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Development Task
+        Create a specific, actionable development task.
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      description: Which phase does this task belong to?
+      options:
+        - "Phase 1: Blockchain Core"
+        - "Phase 2: Explorer"
+        - "Phase 3: Smart Contracts"
+        - "Phase 4: Wallets"
+        - "Phase 5: SmartPay"
+        - "Phase 6: RWA Portals"
+        - "Phase 7: Admin Dashboard"
+        - "Phase 8: Coinbase"
+        - "Phase 9: Documentation"
+        - "Phase 10: Compliance"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      description: Technical domain
+      options:
+        - Blockchain
+        - Smart Contracts
+        - Backend
+        - Frontend
+        - Mobile
+        - DevOps
+        - Documentation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Task priority
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: estimate
+    attributes:
+      label: Effort Estimate
+      description: Estimated story points
+      options:
+        - "1 (Trivial, < 2 hours)"
+        - "2 (Simple, < 4 hours)"
+        - "3 (Standard, 1 day)"
+        - "5 (Medium, 2-3 days)"
+        - "8 (Complex, 1 week)"
+        - "13 (Very complex, 2 weeks)"
+        - "21 (Epic - needs breakdown)"
+    validations:
+      required: false
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: Clear description of what needs to be done
+      placeholder: Implement...
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Technical Requirements
+      description: Specific technical requirements
+      placeholder: |
+        - Must use TypeScript
+        - Must include unit tests
+        - Must update documentation
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this task is complete?
+      placeholder: |
+        - [ ] Implementation complete
+        - [ ] Tests passing
+        - [ ] Documentation updated
+        - [ ] Code review approved
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Other tasks or components this depends on
+      placeholder: |
+        - Depends on #123
+        - Requires norchain-sdk update
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: compliance
+    attributes:
+      label: Compliance Review Required
+      description: Check if this task requires compliance review
+      options:
+        - label: This task affects security token handling
+        - label: This task affects KYC/AML flows
+        - label: This task requires PM review before merge
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Implementation Notes
+      description: Any additional notes for the developer
+      placeholder: Consider using...
+    validations:
+      required: false

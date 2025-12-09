@@ -1,0 +1,219 @@
+name: Enforce Standards
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to check'
+        required: true
+        type: number
+
+jobs:
+  analyze-pr:
+    runs-on: ubuntu-latest
+    outputs:
+      has_compliance_impact: ${{ steps.analyze.outputs.has_compliance_impact }}
+      has_security_token: ${{ steps.analyze.outputs.has_security_token }}
+      affected_repos: ${{ steps.analyze.outputs.affected_repos }}
+      requires_review: ${{ steps.analyze.outputs.requires_review }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze PR Changes
+        id: analyze
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request || await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: ${{ github.event.inputs.pr_number || 'context.payload.pull_request.number' }}
+            }).then(r => r.data);
+
+            // Get changed files
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+
+            const changedFiles = files.data.map(f => f.filename);
+            const allChanges = files.data.map(f => f.patch || '').join('\n').toLowerCase();
+
+            // Check for compliance impact
+            const compliancePatterns = [
+              'kyc', 'aml', 'compliance', 'whitelist', 'blacklist',
+              'transfer', 'minting', 'burning', 'pause'
+            ];
+            const hasComplianceImpact = compliancePatterns.some(p => allChanges.includes(p));
+
+            // Check for security token changes
+            const securityTokenPatterns = [
+              'pm-eq', 'nv-eq', 'pmeq', 'nveq', 'security token',
+              'securitytoken', 'investor registry', 'certificate'
+            ];
+            const hasSecurityToken = securityTokenPatterns.some(p => allChanges.includes(p));
+
+            // Check for forbidden patterns
+            const forbiddenPatterns = [
+              'uniswap', 'sushiswap', 'dex', 'exchange.add',
+              'public sale', 'ico', 'ido'
+            ];
+            const hasForbidden = forbiddenPatterns.some(p => allChanges.includes(p));
+
+            // Determine if PM review required
+            const requiresReview = hasComplianceImpact || hasSecurityToken || hasForbidden;
+
+            core.setOutput('has_compliance_impact', hasComplianceImpact);
+            core.setOutput('has_security_token', hasSecurityToken);
+            core.setOutput('has_forbidden', hasForbidden);
+            core.setOutput('requires_review', requiresReview);
+
+  compliance-check:
+    needs: analyze-pr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Compliance Rules
+        id: compliance
+        run: |
+          VIOLATIONS=0
+          WARNINGS=0
+
+          echo "## Compliance Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check for FIAT handling
+          if grep -rn "stripe\|paypal\|bank_transfer\|fiat" --include="*.ts" --include="*.sol" --include="*.go" 2>/dev/null; then
+            echo "❌ **VIOLATION**: Direct FIAT handling detected" >> $GITHUB_STEP_SUMMARY
+            VIOLATIONS=$((VIOLATIONS + 1))
+          else
+            echo "✅ No direct FIAT handling" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Check for DEX integration in security token context
+          if grep -rn "uniswap\|sushiswap\|pancakeswap" --include="*.sol" 2>/dev/null; then
+            echo "❌ **VIOLATION**: DEX integration detected" >> $GITHUB_STEP_SUMMARY
+            VIOLATIONS=$((VIOLATIONS + 1))
+          else
+            echo "✅ No DEX integration" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Check for private keys
+          if grep -rn "private.*key.*=.*['\"]0x\|mnemonic.*=.*['\"]" --include="*.ts" --include="*.js" 2>/dev/null; then
+            echo "❌ **VIOLATION**: Hardcoded private key or mnemonic" >> $GITHUB_STEP_SUMMARY
+            VIOLATIONS=$((VIOLATIONS + 1))
+          else
+            echo "✅ No hardcoded secrets" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Summary
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Violations: $VIOLATIONS" >> $GITHUB_STEP_SUMMARY
+          echo "- Warnings: $WARNINGS" >> $GITHUB_STEP_SUMMARY
+
+          if [ $VIOLATIONS -gt 0 ]; then
+            echo "compliance_passed=false" >> $GITHUB_OUTPUT
+            exit 1
+          else
+            echo "compliance_passed=true" >> $GITHUB_OUTPUT
+          fi
+
+  code-standards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check TypeScript Standards
+        if: hashFiles('**/*.ts') != ''
+        run: |
+          echo "## TypeScript Standards" >> $GITHUB_STEP_SUMMARY
+
+          # Check for 'any' types
+          ANY_COUNT=$(grep -rn ": any\b\|<any>" --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l || echo "0")
+          if [ "$ANY_COUNT" -gt 0 ]; then
+            echo "⚠️ Found $ANY_COUNT usages of 'any' type" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ No 'any' types found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check Solidity Standards
+        if: hashFiles('**/*.sol') != ''
+        run: |
+          echo "## Solidity Standards" >> $GITHUB_STEP_SUMMARY
+
+          # Check for SPDX license
+          MISSING_LICENSE=$(find . -name "*.sol" -exec grep -L "SPDX-License-Identifier" {} \; 2>/dev/null | wc -l || echo "0")
+          if [ "$MISSING_LICENSE" -gt 0 ]; then
+            echo "⚠️ $MISSING_LICENSE files missing SPDX license" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ All Solidity files have SPDX license" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  add-labels:
+    needs: [analyze-pr, compliance-check]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Compliance Labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request?.number || ${{ github.event.inputs.pr_number || 0 }};
+
+            if (!prNumber) return;
+
+            const labels = [];
+
+            if ('${{ needs.analyze-pr.outputs.has_compliance_impact }}' === 'true') {
+              labels.push('compliance');
+            }
+
+            if ('${{ needs.analyze-pr.outputs.has_security_token }}' === 'true') {
+              labels.push('security-token');
+            }
+
+            if ('${{ needs.analyze-pr.outputs.requires_review }}' === 'true') {
+              labels.push('pm-review-required');
+            }
+
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                labels: labels
+              });
+            }
+
+      - name: Request PM Review
+        if: needs.analyze-pr.outputs.requires_review == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request?.number || ${{ github.event.inputs.pr_number || 0 }};
+
+            if (!prNumber) return;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `## PM Review Required
+
+            This PR has been flagged for Product Manager review due to:
+
+            ${('${{ needs.analyze-pr.outputs.has_compliance_impact }}' === 'true') ? '- ⚠️ Compliance impact detected\n' : ''}
+            ${('${{ needs.analyze-pr.outputs.has_security_token }}' === 'true') ? '- ⚠️ Security token changes detected\n' : ''}
+
+            Please ensure compliance requirements are met before merging.
+
+            ---
+            🤖 NorChain PM Agent`
+            });

@@ -1,0 +1,17 @@
+[
+  { "name": "norchain-node", "description": "Core NorChain blockchain node software", "url": "https://github.com/NorChainOfficial/norchain-node", "visibility": "public", "category": "Core", "phase": 1, "defaultBranch": "main" },
+  { "name": "norchain-genesis", "description": "Genesis configuration and genesis assets", "url": "https://github.com/NorChainOfficial/norchain-genesis", "visibility": "public", "category": "Core", "phase": 1, "defaultBranch": "main" },
+  { "name": "norchain-contracts", "description": "Smart contracts (NOR, governance, staking)", "url": "https://github.com/NorChainOfficial/norchain-contracts", "visibility": "public", "category": "Core", "phase": 3, "defaultBranch": "main" },
+  { "name": "norchain-infra", "description": "Infrastructure-as-code: Docker, K8s, Terraform", "url": "https://github.com/NorChainOfficial/norchain-infra", "visibility": "public", "category": "DevOps", "phase": 1, "defaultBranch": "main" },
+  { "name": "norchain-wallet-core", "description": "Shared wallet core libraries", "url": "https://github.com/NorChainOfficial/norchain-wallet-core", "visibility": "public", "category": "Wallet", "phase": 4, "defaultBranch": "main" },
+  { "name": "norchain-wallet-ios", "description": "Reference iOS wallet", "url": "https://github.com/NorChainOfficial/norchain-wallet-ios", "visibility": "public", "category": "Wallet", "phase": 4, "defaultBranch": "main" },
+  { "name": "norchain-wallet-android", "description": "Reference Android wallet", "url": "https://github.com/NorChainOfficial/norchain-wallet-android", "visibility": "public", "category": "Wallet", "phase": 4, "defaultBranch": "main" },
+  { "name": "norchain-wallet-web", "description": "Browser/web wallet", "url": "https://github.com/NorChainOfficial/norchain-wallet-web", "visibility": "public", "category": "Wallet", "phase": 4, "defaultBranch": "main" },
+  { "name": "norchain-bridge-hub", "description": "Bridge orchestrator for ETH/BSC/Polygon", "url": "https://github.com/NorChainOfficial/norchain-bridge-hub", "visibility": "private", "category": "Services", "phase": 10, "defaultBranch": "main" },
+  { "name": "norchain-compliance-service", "description": "KYC/AML integration, risk scoring", "url": "https://github.com/NorChainOfficial/norchain-compliance-service", "visibility": "private", "category": "Services", "phase": 10, "defaultBranch": "main" },
+  { "name": "norchain-payments", "description": "SmartPay / NorPay backend", "url": "https://github.com/NorChainOfficial/norchain-payments", "visibility": "private", "category": "Services", "phase": 5, "defaultBranch": "main" },
+  { "name": "norchain-sdk", "description": "Main monorepo with 8 apps", "url": "https://github.com/NorChainOfficial/norchain-sdk", "visibility": "public", "category": "Core", "phase": 1, "defaultBranch": "main" },
+  { "name": "mobile-validator", "description": "Validator dashboard template", "url": "https://github.com/NorChainOfficial/mobile-validator", "visibility": "private", "category": "Tools", "phase": 1, "defaultBranch": "main" },
+  { "name": "norchain", "description": "Organization placeholder", "url": "https://github.com/NorChainOfficial/norchain", "visibility": "public", "category": "Core", "phase": 1, "defaultBranch": "main" }
+]
+

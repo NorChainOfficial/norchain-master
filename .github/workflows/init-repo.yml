@@ -1,0 +1,634 @@
+name: Initialize Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_name:
+        description: 'Repository name (e.g., norchain-new-service)'
+        required: true
+        type: string
+      repo_type:
+        description: 'Repository type'
+        required: true
+        type: choice
+        options:
+          - blockchain
+          - contracts
+          - backend
+          - frontend
+          - mobile
+          - infrastructure
+          - documentation
+      domain:
+        description: 'Primary domain'
+        required: true
+        type: choice
+        options:
+          - blockchain
+          - smart-contracts
+          - backend
+          - frontend
+          - mobile
+          - devops
+      phase:
+        description: 'Phase number (1-10)'
+        required: true
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+          - '7'
+          - '8'
+          - '9'
+          - '10'
+      visibility:
+        description: 'Repository visibility'
+        required: true
+        type: choice
+        options:
+          - private
+          - public
+        default: 'private'
+      description:
+        description: 'Repository description'
+        required: false
+        type: string
+
+env:
+  ORGANIZATION: NorChainOfficial
+
+jobs:
+  create-repository:
+    runs-on: ubuntu-latest
+    outputs:
+      repo_created: ${{ steps.create.outputs.created }}
+      repo_url: ${{ steps.create.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Repository
+        id: create
+        env:
+          GH_TOKEN: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+        run: |
+          # Check if repo already exists
+          if gh repo view ${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }} &>/dev/null; then
+            echo "Repository already exists"
+            echo "created=false" >> $GITHUB_OUTPUT
+            echo "url=https://github.com/${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Create the repository
+          gh repo create ${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }} \
+            --${{ github.event.inputs.visibility }} \
+            --description "${{ github.event.inputs.description || format('NorChain {0} repository', github.event.inputs.repo_type) }}" \
+            --clone=false
+
+          echo "created=true" >> $GITHUB_OUTPUT
+          echo "url=https://github.com/${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}" >> $GITHUB_OUTPUT
+
+          echo "## Repository Created" >> $GITHUB_STEP_SUMMARY
+          echo "- **Name**: ${{ github.event.inputs.repo_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type**: ${{ github.event.inputs.repo_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Phase**: ${{ github.event.inputs.phase }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: https://github.com/${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}" >> $GITHUB_STEP_SUMMARY
+
+  setup-repository:
+    needs: create-repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: master
+
+      - name: Checkout new repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}
+          token: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+          path: target
+
+      - name: Copy Templates
+        run: |
+          cd target
+
+          # Create directory structure
+          mkdir -p .github/ISSUE_TEMPLATE
+          mkdir -p .github/workflows
+          mkdir -p .norchain
+          mkdir -p docs
+          mkdir -p src
+
+          # Copy GitHub templates
+          if [ -d "../master/templates/github/ISSUE_TEMPLATE" ]; then
+            cp -r ../master/templates/github/ISSUE_TEMPLATE/* .github/ISSUE_TEMPLATE/ 2>/dev/null || true
+          fi
+
+          if [ -f "../master/templates/github/PULL_REQUEST_TEMPLATE.md" ]; then
+            cp ../master/templates/github/PULL_REQUEST_TEMPLATE.md .github/ 2>/dev/null || true
+          fi
+
+          # Copy base CI workflow
+          if [ -f "../master/templates/github/workflows/ci-base.yml" ]; then
+            cp ../master/templates/github/workflows/ci-base.yml .github/workflows/ci.yml 2>/dev/null || true
+          fi
+
+          # Copy NorChain specs
+          if [ -f "../master/docs/ROADMAP.md" ]; then
+            cp ../master/docs/ROADMAP.md .norchain/ 2>/dev/null || true
+          fi
+
+          if [ -f "../master/docs/LEGAL_COMPLIANCE_ROADMAP.md" ]; then
+            cp ../master/docs/LEGAL_COMPLIANCE_ROADMAP.md .norchain/ 2>/dev/null || true
+          fi
+
+      - name: Generate README
+        run: |
+          cd target
+
+          REPO_TYPE="${{ github.event.inputs.repo_type }}"
+          REPO_NAME="${{ github.event.inputs.repo_name }}"
+          PHASE="${{ github.event.inputs.phase }}"
+
+          cat > README.md << EOF
+          # ${REPO_NAME}
+
+          ${{ github.event.inputs.description || format('NorChain {0} repository', github.event.inputs.repo_type) }}
+
+          ## Overview
+
+          This repository is part of the NorChain ecosystem.
+
+          - **Type**: ${REPO_TYPE}
+          - **Phase**: ${PHASE}
+          - **Domain**: ${{ github.event.inputs.domain }}
+
+          ## Getting Started
+
+          \`\`\`bash
+          # Clone the repository
+          git clone https://github.com/${{ env.ORGANIZATION }}/${REPO_NAME}.git
+          cd ${REPO_NAME}
+
+          # Install dependencies
+          # (Add specific instructions based on repo type)
+          \`\`\`
+
+          ## Documentation
+
+          - [NorChain Roadmap](.norchain/ROADMAP.md)
+          - [Compliance Requirements](.norchain/LEGAL_COMPLIANCE_ROADMAP.md)
+
+          ## Contributing
+
+          Please read our [Contributing Guide](CONTRIBUTING.md) before submitting PRs.
+
+          ## License
+
+          Proprietary - NorChain Official
+
+          ---
+
+          Part of the [NorChain Ecosystem](https://github.com/${{ env.ORGANIZATION }})
+          EOF
+
+      - name: Generate CONTRIBUTING.md
+        run: |
+          cd target
+
+          cat > CONTRIBUTING.md << 'EOF'
+          # Contributing to NorChain
+
+          Thank you for your interest in contributing to NorChain!
+
+          ## Code of Conduct
+
+          This project adheres to a Code of Conduct. By participating, you are expected to uphold this code.
+
+          ## Development Workflow
+
+          1. Fork the repository
+          2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+          3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+          4. Push to the branch (`git push origin feature/amazing-feature`)
+          5. Open a Pull Request
+
+          ## Commit Convention
+
+          We use [Conventional Commits](https://www.conventionalcommits.org/):
+
+          - `feat:` New features
+          - `fix:` Bug fixes
+          - `docs:` Documentation changes
+          - `chore:` Maintenance tasks
+          - `refactor:` Code refactoring
+          - `test:` Test additions/modifications
+
+          ## Pull Request Process
+
+          1. Ensure all tests pass
+          2. Update documentation as needed
+          3. Add appropriate labels
+          4. Request review from maintainers
+
+          ## Compliance Requirements
+
+          All contributions must:
+
+          - NOT introduce public trading mechanisms for security tokens
+          - NOT bypass KYC requirements
+          - NOT handle FIAT directly
+          - Maintain private placement status for PM-EQ/NV-EQ tokens
+
+          ## Questions?
+
+          Open an issue or contact the development team.
+          EOF
+
+      - name: Generate .gitignore
+        run: |
+          cd target
+
+          REPO_TYPE="${{ github.event.inputs.repo_type }}"
+
+          cat > .gitignore << 'EOF'
+          # Dependencies
+          node_modules/
+          vendor/
+
+          # Build outputs
+          dist/
+          build/
+          .next/
+          out/
+
+          # Environment
+          .env
+          .env.local
+          .env.*.local
+          *.env
+
+          # IDE
+          .idea/
+          .vscode/
+          *.swp
+          *.swo
+
+          # OS
+          .DS_Store
+          Thumbs.db
+
+          # Logs
+          logs/
+          *.log
+          npm-debug.log*
+
+          # Test coverage
+          coverage/
+          .nyc_output/
+
+          # Temporary files
+          tmp/
+          temp/
+          *.tmp
+
+          # Secrets (NEVER commit these)
+          *.pem
+          *.key
+          secrets/
+          credentials/
+          EOF
+
+          # Add type-specific ignores
+          case "$REPO_TYPE" in
+            "blockchain")
+              echo -e "\n# Go\n*.exe\n*.dll\n*.so\n*.dylib" >> .gitignore
+              ;;
+            "contracts")
+              echo -e "\n# Hardhat\ncache/\nartifacts/\ntypechain-types/" >> .gitignore
+              ;;
+            "mobile")
+              echo -e "\n# iOS\n*.xcworkspace\nPods/\n\n# Android\n*.apk\n*.aab\n.gradle/" >> .gitignore
+              ;;
+          esac
+
+      - name: Create Initial Labels Config
+        run: |
+          cd target
+
+          mkdir -p .github
+
+          cat > .github/labels.yml << EOF
+          # Phase label
+          - name: "phase-${{ github.event.inputs.phase }}"
+            color: "0366d6"
+            description: "Phase ${{ github.event.inputs.phase }} task"
+
+          # Priority labels
+          - name: "priority-critical"
+            color: "b60205"
+            description: "Critical priority"
+
+          - name: "priority-high"
+            color: "d93f0b"
+            description: "High priority"
+
+          - name: "priority-medium"
+            color: "fbca04"
+            description: "Medium priority"
+
+          - name: "priority-low"
+            color: "0e8a16"
+            description: "Low priority"
+
+          # Type labels
+          - name: "type-feature"
+            color: "1d76db"
+            description: "New feature"
+
+          - name: "type-bug"
+            color: "d73a4a"
+            description: "Bug fix"
+
+          - name: "type-enhancement"
+            color: "a2eeef"
+            description: "Enhancement"
+
+          - name: "type-documentation"
+            color: "0075ca"
+            description: "Documentation"
+
+          # Compliance labels
+          - name: "compliance"
+            color: "5319e7"
+            description: "Compliance related"
+
+          - name: "security-token"
+            color: "b60205"
+            description: "Security token impact"
+
+          - name: "pm-review-required"
+            color: "d4c5f9"
+            description: "Requires PM review"
+
+          # Status labels
+          - name: "needs-review"
+            color: "fbca04"
+            description: "Needs review"
+
+          - name: "approved"
+            color: "0e8a16"
+            description: "Approved"
+
+          - name: "blocked"
+            color: "d93f0b"
+            description: "Blocked"
+          EOF
+
+      - name: Add NorChain Marker
+        run: |
+          cd target
+
+          cat > .norchain/config.yml << EOF
+          # NorChain Repository Configuration
+          # Generated by PM Agent
+
+          repository:
+            name: ${{ github.event.inputs.repo_name }}
+            type: ${{ github.event.inputs.repo_type }}
+            domain: ${{ github.event.inputs.domain }}
+            phase: ${{ github.event.inputs.phase }}
+
+          master:
+            repo: ${{ env.ORGANIZATION }}/norchain-master
+            sync: true
+
+          compliance:
+            security_token_handling: false
+            kyc_required: false
+            fiat_handling: false
+
+          created:
+            date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+            by: pm-agent
+            source: ${{ github.repository }}@${{ github.sha }}
+          EOF
+
+      - name: Commit and Push
+        run: |
+          cd target
+
+          git config user.name "NorChain PM Agent"
+          git config user.email "pm-agent@norchain.org"
+
+          git add -A
+
+          git commit -m "chore: initialize repository from norchain-master
+
+          - Add GitHub templates
+          - Add NorChain specs
+          - Add base configuration
+          - Configure labels
+
+          Repository Type: ${{ github.event.inputs.repo_type }}
+          Phase: ${{ github.event.inputs.phase }}
+          Domain: ${{ github.event.inputs.domain }}
+
+          Generated by NorChain PM Agent"
+
+          git push origin main || git push origin master
+
+  configure-repository:
+    needs: [create-repository, setup-repository]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Branch Protection
+        env:
+          GH_TOKEN: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+        run: |
+          # Note: This requires admin access
+          # Branch protection rules
+          gh api \
+            --method PUT \
+            -H "Accept: application/vnd.github+json" \
+            /repos/${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}/branches/main/protection \
+            -f required_status_checks='{"strict":true,"contexts":[]}' \
+            -F enforce_admins=false \
+            -f required_pull_request_reviews='{"dismiss_stale_reviews":true,"require_code_owner_reviews":false,"required_approving_review_count":1}' \
+            -F restrictions=null \
+            -F allow_force_pushes=false \
+            -F allow_deletions=false \
+            2>/dev/null || echo "Branch protection not configured (may require admin access)"
+
+      - name: Apply Labels
+        env:
+          GH_TOKEN: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+        run: |
+          REPO="${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}"
+
+          # Create labels
+          gh label create "phase-${{ github.event.inputs.phase }}" --repo "$REPO" --color "0366d6" --description "Phase ${{ github.event.inputs.phase }} task" 2>/dev/null || true
+          gh label create "priority-critical" --repo "$REPO" --color "b60205" --description "Critical priority" 2>/dev/null || true
+          gh label create "priority-high" --repo "$REPO" --color "d93f0b" --description "High priority" 2>/dev/null || true
+          gh label create "priority-medium" --repo "$REPO" --color "fbca04" --description "Medium priority" 2>/dev/null || true
+          gh label create "priority-low" --repo "$REPO" --color "0e8a16" --description "Low priority" 2>/dev/null || true
+          gh label create "compliance" --repo "$REPO" --color "5319e7" --description "Compliance related" 2>/dev/null || true
+          gh label create "security-token" --repo "$REPO" --color "b60205" --description "Security token impact" 2>/dev/null || true
+          gh label create "pm-review-required" --repo "$REPO" --color "d4c5f9" --description "Requires PM review" 2>/dev/null || true
+
+  create-initial-issues:
+    needs: [create-repository, setup-repository, configure-repository]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Welcome Issue
+        env:
+          GH_TOKEN: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+        run: |
+          REPO="${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}"
+
+          gh issue create \
+            --repo "$REPO" \
+            --title "Welcome to ${{ github.event.inputs.repo_name }}" \
+            --body "## Welcome!
+
+          This repository has been initialized by the NorChain PM Agent.
+
+          ### Repository Information
+
+          | Property | Value |
+          |----------|-------|
+          | Type | ${{ github.event.inputs.repo_type }} |
+          | Domain | ${{ github.event.inputs.domain }} |
+          | Phase | ${{ github.event.inputs.phase }} |
+
+          ### Getting Started
+
+          1. Review the [README](../blob/main/README.md)
+          2. Check the [NorChain Roadmap](../blob/main/.norchain/ROADMAP.md)
+          3. Review [Compliance Requirements](../blob/main/.norchain/LEGAL_COMPLIANCE_ROADMAP.md)
+          4. Start contributing!
+
+          ### Next Steps
+
+          - [ ] Set up development environment
+          - [ ] Configure CI/CD pipelines
+          - [ ] Add domain-specific tooling
+          - [ ] Create initial project structure
+
+          ---
+
+          *Generated by NorChain PM Agent*" \
+            --label "documentation"
+
+      - name: Create Setup Issue
+        env:
+          GH_TOKEN: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+        run: |
+          REPO="${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }}"
+          REPO_TYPE="${{ github.event.inputs.repo_type }}"
+
+          # Create type-specific setup issue
+          case "$REPO_TYPE" in
+            "blockchain")
+              SETUP_TASKS="- [ ] Set up Go module
+          - [ ] Configure libp2p networking
+          - [ ] Set up consensus module structure
+          - [ ] Configure storage layer
+          - [ ] Add validator management"
+              ;;
+            "contracts")
+              SETUP_TASKS="- [ ] Initialize Hardhat project
+          - [ ] Configure Solidity compiler
+          - [ ] Set up testing framework
+          - [ ] Add deployment scripts
+          - [ ] Configure contract verification"
+              ;;
+            "backend")
+              SETUP_TASKS="- [ ] Initialize NestJS project
+          - [ ] Configure TypeScript
+          - [ ] Set up database connections
+          - [ ] Configure authentication
+          - [ ] Add API documentation"
+              ;;
+            "frontend")
+              SETUP_TASKS="- [ ] Initialize Next.js project
+          - [ ] Configure Tailwind CSS
+          - [ ] Set up state management
+          - [ ] Configure API integration
+          - [ ] Add component library"
+              ;;
+            "mobile")
+              SETUP_TASKS="- [ ] Set up iOS project (Swift)
+          - [ ] Set up Android project (Kotlin)
+          - [ ] Configure wallet-core integration
+          - [ ] Set up secure storage
+          - [ ] Add biometric authentication"
+              ;;
+            *)
+              SETUP_TASKS="- [ ] Define project structure
+          - [ ] Add configuration files
+          - [ ] Set up development tools
+          - [ ] Configure testing
+          - [ ] Add documentation"
+              ;;
+          esac
+
+          gh issue create \
+            --repo "$REPO" \
+            --title "Initial Setup: Configure ${{ github.event.inputs.repo_type }} Environment" \
+            --body "## Setup Tasks
+
+          Complete the following setup tasks for this ${{ github.event.inputs.repo_type }} repository:
+
+          $SETUP_TASKS
+
+          ### Priority
+          High - This blocks other development work.
+
+          ### Phase
+          Phase ${{ github.event.inputs.phase }}
+
+          ---
+
+          *Generated by NorChain PM Agent*" \
+            --label "phase-${{ github.event.inputs.phase }}" \
+            --label "priority-high"
+
+  notify-completion:
+    needs: [create-repository, setup-repository, configure-repository, create-initial-issues]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## Repository Initialization Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Repository Details" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Name | ${{ github.event.inputs.repo_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | ${{ github.event.inputs.repo_type }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Domain | ${{ github.event.inputs.domain }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Phase | ${{ github.event.inputs.phase }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Visibility | ${{ github.event.inputs.visibility }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | https://github.com/${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### What Was Created" >> $GITHUB_STEP_SUMMARY
+          echo "- README.md" >> $GITHUB_STEP_SUMMARY
+          echo "- CONTRIBUTING.md" >> $GITHUB_STEP_SUMMARY
+          echo "- .gitignore" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub issue templates" >> $GITHUB_STEP_SUMMARY
+          echo "- PR template" >> $GITHUB_STEP_SUMMARY
+          echo "- NorChain configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- Initial labels" >> $GITHUB_STEP_SUMMARY
+          echo "- Welcome and setup issues" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Generated by NorChain PM Agent*" >> $GITHUB_STEP_SUMMARY

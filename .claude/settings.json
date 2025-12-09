@@ -1,12 +1,62 @@
 {
   "project": {
     "name": "NorChain Ecosystem",
-    "version": "1.0.0",
-    "description": "NorChain blockchain ecosystem with RWA tokenization"
+    "version": "2.0.0",
+    "description": "NorChain blockchain ecosystem with RWA tokenization - AI PM Hub"
+  },
+  "productManager": {
+    "enabled": true,
+    "agent": "norchain-pm-agent",
+    "expertise": {
+      "years": 30,
+      "domains": ["blockchain", "web3", "security-tokens", "compliance"],
+      "eras": [
+        "Pre-Bitcoin (1994-2008)",
+        "Early Blockchain (2009-2014)",
+        "Smart Contract Era (2015-2017)",
+        "Enterprise & Scaling (2018-2020)",
+        "Institutional Adoption (2021-2024)",
+        "Current (2025)"
+      ]
+    },
+    "frameworks": {
+      "prioritization": ["RICE", "ICE", "MoSCoW"],
+      "estimation": "Fibonacci Story Points",
+      "methodology": "Agile/Scrum (2-week sprints)"
+    },
+    "automation": {
+      "level": "hybrid",
+      "automated": [
+        "issue_creation",
+        "labeling",
+        "milestone_assignment",
+        "status_updates",
+        "dependency_analysis",
+        "compliance_checks"
+      ],
+      "requiresApproval": [
+        "pull_requests",
+        "releases",
+        "breaking_changes",
+        "security_token_modifications",
+        "production_deployments"
+      ]
+    }
   },
   "agents": {
-    "default": "norchain-development",
+    "default": "norchain-pm-agent",
+    "hierarchy": {
+      "master": "norchain-pm-agent",
+      "domains": [
+        "norchain-blockchain-agent",
+        "norchain-contract-agent",
+        "norchain-backend-agent",
+        "norchain-frontend-agent",
+        "norchain-mobile-agent"
+      ]
+    },
     "available": [
+      "norchain-pm-agent",
       "norchain-blockchain-agent",
       "norchain-contract-agent",
       "norchain-backend-agent",
@@ -16,9 +66,11 @@
   },
   "skills": {
     "autoLoad": [
+      "product-management",
       "norchain-development"
     ],
     "available": [
+      "product-management",
       "norchain-development",
       "smartpay-integration",
       "security-token",
@@ -27,8 +79,17 @@
     ]
   },
   "commands": {
-    "prefix": "norchain-",
-    "available": [
+    "prefixes": ["pm-", "norchain-"],
+    "pm": [
+      "pm-plan",
+      "pm-review",
+      "pm-prioritize",
+      "pm-sprint",
+      "pm-status",
+      "pm-risk",
+      "pm-delegate"
+    ],
+    "norchain": [
       "norchain-status",
       "norchain-phase",
       "norchain-task",
@@ -39,13 +100,59 @@
       "smartpay"
     ]
   },
+  "mcp": {
+    "servers": {
+      "pm": {
+        "name": "norchain-pm",
+        "tools": [
+          "pm_create_prd",
+          "pm_estimate_effort",
+          "pm_check_dependencies",
+          "pm_compliance_gate",
+          "pm_generate_tasks",
+          "pm_sync_milestones",
+          "pm_report_progress"
+        ]
+      },
+      "pmGithub": {
+        "name": "norchain-pm-github",
+        "tools": [
+          "github_repo_status",
+          "github_all_repos_status",
+          "github_sync_labels",
+          "github_cross_repo_search"
+        ]
+      },
+      "pmAnalytics": {
+        "name": "norchain-pm-analytics",
+        "tools": [
+          "analytics_velocity",
+          "analytics_burndown",
+          "analytics_cycle_time",
+          "analytics_quality"
+        ]
+      }
+    },
+    "configPath": ".claude/mcp/"
+  },
+  "workflows": {
+    "github": {
+      "syncSpecs": ".github/workflows/sync-specs.yml",
+      "orchestrateIssues": ".github/workflows/orchestrate-issues.yml",
+      "enforceStandards": ".github/workflows/enforce-standards.yml",
+      "trackMilestones": ".github/workflows/track-milestones.yml",
+      "initRepo": ".github/workflows/init-repo.yml"
+    }
+  },
   "context": {
     "alwaysInclude": [
       "CLAUDE.md",
       "docs/ROADMAP.md",
-      "docs/LEGAL_COMPLIANCE_ROADMAP.md"
+      "docs/LEGAL_COMPLIANCE_ROADMAP.md",
+      ".claude/agents/norchain-pm-agent.md"
     ],
     "conditionalInclude": {
+      "planning": [".claude/skills/product-management.md"],
       "contracts": ["docs/DEVELOPER_TASKS.md"],
       "frontend": ["docs/REPOSITORY_STRUCTURE.md"],
       "backend": ["docs/REPOSITORY_STRUCTURE.md"],
@@ -58,24 +165,50 @@
       "NOR": {
         "type": "utility",
         "tradability": "public",
-        "kycRequired": false
+        "kycRequired": false,
+        "complianceLevel": "standard"
       },
       "PM-EQ": {
         "type": "security",
         "tradability": "private",
-        "kycRequired": true
+        "kycRequired": true,
+        "complianceLevel": "full"
       },
       "NV-EQ": {
         "type": "security",
         "tradability": "private",
-        "kycRequired": true
+        "kycRequired": true,
+        "complianceLevel": "full"
       }
     },
     "rules": [
       "NorChain never handles FIAT",
       "Security tokens require KYC for all transfers",
-      "No public DEX/CEX for security tokens"
-    ]
+      "No public DEX/CEX for security tokens",
+      "All security token changes require PM review",
+      "MiCA triggers must be avoided"
+    ],
+    "gates": {
+      "securityToken": true,
+      "compliance": true,
+      "pmReview": true
+    }
+  },
+  "repositories": {
+    "master": "norchain-master",
+    "count": "50+",
+    "phases": {
+      "1": ["norchain-node", "norchain-genesis"],
+      "2": ["norchain-explorer"],
+      "3": ["norchain-contracts"],
+      "4": ["norchain-wallet-core", "norchain-wallet-ios", "norchain-wallet-android", "norchain-wallet-web"],
+      "5": ["norchain-services", "norchain-payments"],
+      "6": ["norchain-portal"],
+      "7": ["norchain-admin"],
+      "8": ["norchain-exchange"],
+      "9": ["norchain-docs"],
+      "10": ["norchain-compliance"]
+    }
   },
   "networks": {
     "mainnet": {
@@ -94,5 +227,14 @@
   "hooks": {
     "enabled": true,
     "configPath": ".claude/hooks/"
+  },
+  "templates": {
+    "path": "templates/",
+    "github": {
+      "issues": "templates/github/ISSUE_TEMPLATE/",
+      "prTemplate": "templates/github/PULL_REQUEST_TEMPLATE.md",
+      "workflows": "templates/github/workflows/"
+    },
+    "docs": "templates/docs/"
   }
 }

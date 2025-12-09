@@ -1,0 +1,130 @@
+name: Feature Request
+description: Propose a new feature for NorChain
+title: "[FEATURE] "
+labels: ["type-feature", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Feature Request
+        Thank you for suggesting a feature! Please fill out this form to help us understand your request.
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Related Phase
+      description: Which development phase does this feature relate to?
+      options:
+        - "Phase 1: Blockchain Core"
+        - "Phase 2: Explorer"
+        - "Phase 3: Smart Contracts"
+        - "Phase 4: Wallets"
+        - "Phase 5: SmartPay"
+        - "Phase 6: RWA Portals"
+        - "Phase 7: Admin Dashboard"
+        - "Phase 8: Coinbase"
+        - "Phase 9: Documentation"
+        - "Phase 10: Compliance"
+        - "Cross-phase / Infrastructure"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      description: Which technical domain does this feature belong to?
+      options:
+        - Blockchain (Go, PoSA, P2P)
+        - Smart Contracts (Solidity, Hardhat)
+        - Backend (NestJS, PostgreSQL)
+        - Frontend (Next.js, React)
+        - Mobile (Swift, Kotlin)
+        - DevOps (Infrastructure)
+        - Documentation
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature
+      placeholder: Describe the feature you'd like to see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: Currently, we cannot... / Users struggle with...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How do you envision this feature working?
+      placeholder: The feature should...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions?
+      placeholder: I also considered...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Suggested Priority
+      description: How important is this feature?
+      options:
+        - Critical (Blocking)
+        - High (Important)
+        - Medium (Nice to have)
+        - Low (Future consideration)
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: compliance
+    attributes:
+      label: Compliance Considerations
+      description: Check all that apply
+      options:
+        - label: This feature involves security tokens (PM-EQ, NV-EQ)
+        - label: This feature involves KYC/AML
+        - label: This feature involves FIAT handling
+        - label: This feature affects token transfers
+        - label: None of the above apply
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know when this feature is complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or references
+      placeholder: Add any other context here...
+    validations:
+      required: false

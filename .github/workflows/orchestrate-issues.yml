@@ -1,0 +1,199 @@
+name: Orchestrate Issues
+
+on:
+  issues:
+    types: [opened, labeled, edited]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to process'
+        required: true
+        type: number
+
+env:
+  ORGANIZATION: NorChainOfficial
+
+jobs:
+  analyze-issue:
+    runs-on: ubuntu-latest
+    outputs:
+      phase: ${{ steps.classify.outputs.phase }}
+      domain: ${{ steps.classify.outputs.domain }}
+      priority: ${{ steps.classify.outputs.priority }}
+      is_cross_repo: ${{ steps.classify.outputs.is_cross_repo }}
+      affected_repos: ${{ steps.classify.outputs.affected_repos }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Classify Issue
+        id: classify
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue || await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.inputs.issue_number || 'context.payload.issue.number' }}
+            }).then(r => r.data);
+
+            const title = issue.title.toLowerCase();
+            const body = (issue.body || '').toLowerCase();
+            const content = `${title} ${body}`;
+
+            // Phase detection
+            let phase = 0;
+            const phaseKeywords = {
+              1: ['blockchain', 'node', 'consensus', 'posa', 'genesis', 'validator'],
+              2: ['explorer', 'indexer', 'block viewer'],
+              3: ['contract', 'solidity', 'token', 'erc', 'smart contract'],
+              4: ['wallet', 'mobile', 'ios', 'android', 'web wallet'],
+              5: ['smartpay', 'payment', 'escrow', 'onramp'],
+              6: ['portal', 'rwa', 'investor', 'kyc'],
+              7: ['admin', 'dashboard', 'management'],
+              8: ['coinbase', 'listing', 'exchange'],
+              9: ['documentation', 'docs', 'readme'],
+              10: ['compliance', 'audit', 'regulatory', 'mica']
+            };
+
+            for (const [p, keywords] of Object.entries(phaseKeywords)) {
+              if (keywords.some(k => content.includes(k))) {
+                phase = parseInt(p);
+                break;
+              }
+            }
+
+            // Domain detection
+            let domain = 'general';
+            const domainKeywords = {
+              'blockchain': ['go', 'node', 'consensus', 'p2p', 'libp2p'],
+              'contracts': ['solidity', 'hardhat', 'smart contract', 'erc'],
+              'backend': ['nestjs', 'api', 'service', 'postgres', 'redis'],
+              'frontend': ['react', 'next.js', 'tailwind', 'ui', 'ux'],
+              'mobile': ['swift', 'kotlin', 'ios', 'android', 'mobile']
+            };
+
+            for (const [d, keywords] of Object.entries(domainKeywords)) {
+              if (keywords.some(k => content.includes(k))) {
+                domain = d;
+                break;
+              }
+            }
+
+            // Priority detection
+            let priority = 'medium';
+            if (content.includes('critical') || content.includes('security') || content.includes('urgent')) {
+              priority = 'critical';
+            } else if (content.includes('important') || content.includes('high priority')) {
+              priority = 'high';
+            } else if (content.includes('minor') || content.includes('low priority')) {
+              priority = 'low';
+            }
+
+            // Cross-repo detection
+            const repoMentions = content.match(/norchain-\w+/g) || [];
+            const uniqueRepos = [...new Set(repoMentions)];
+            const isCrossRepo = uniqueRepos.length > 1;
+
+            core.setOutput('phase', phase);
+            core.setOutput('domain', domain);
+            core.setOutput('priority', priority);
+            core.setOutput('is_cross_repo', isCrossRepo);
+            core.setOutput('affected_repos', uniqueRepos.join(','));
+
+  apply-labels:
+    needs: analyze-issue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply Phase Label
+        if: needs.analyze-issue.outputs.phase != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const phase = ${{ needs.analyze-issue.outputs.phase }};
+            const issueNumber = context.payload.issue?.number || ${{ github.event.inputs.issue_number || 0 }};
+
+            if (issueNumber && phase > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: [`phase-${phase}`]
+              });
+            }
+
+      - name: Apply Priority Label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const priority = '${{ needs.analyze-issue.outputs.priority }}';
+            const issueNumber = context.payload.issue?.number || ${{ github.event.inputs.issue_number || 0 }};
+
+            if (issueNumber) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: [`priority-${priority}`]
+              });
+            }
+
+      - name: Apply Cross-Repo Label
+        if: needs.analyze-issue.outputs.is_cross_repo == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.payload.issue?.number || ${{ github.event.inputs.issue_number || 0 }};
+
+            if (issueNumber) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['cross-repo']
+              });
+            }
+
+  create-linked-issues:
+    needs: analyze-issue
+    if: needs.analyze-issue.outputs.is_cross_repo == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Tracking Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.payload.issue?.number || ${{ github.event.inputs.issue_number || 0 }};
+            const affectedRepos = '${{ needs.analyze-issue.outputs.affected_repos }}'.split(',').filter(Boolean);
+
+            if (issueNumber && affectedRepos.length > 0) {
+              let comment = `## Cross-Repository Impact\n\n`;
+              comment += `This issue affects multiple repositories:\n\n`;
+
+              for (const repo of affectedRepos) {
+                comment += `- [ ] \`${repo}\`\n`;
+              }
+
+              comment += `\n---\n`;
+              comment += `🤖 Detected by NorChain PM Agent\n`;
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: comment
+              });
+            }
+
+  update-master-tracking:
+    needs: [analyze-issue, apply-labels]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update STATUS.md
+        run: |
+          echo "Issue classified and labeled" >> $GITHUB_STEP_SUMMARY
+          echo "- Phase: ${{ needs.analyze-issue.outputs.phase }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Domain: ${{ needs.analyze-issue.outputs.domain }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Priority: ${{ needs.analyze-issue.outputs.priority }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Cross-repo: ${{ needs.analyze-issue.outputs.is_cross_repo }}" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,167 @@
+name: Sync Specifications
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'specs/**'
+      - 'templates/**'
+  workflow_dispatch:
+    inputs:
+      target_repos:
+        description: 'Comma-separated list of repos to sync (or "all")'
+        required: false
+        default: 'all'
+      dry_run:
+        description: 'Dry run (no actual changes)'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  ORGANIZATION: NorChainOfficial
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed_files: ${{ steps.changes.outputs.files }}
+      affected_repos: ${{ steps.determine-repos.outputs.repos }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Get changed files
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual trigger - sync all
+            echo "files=all" >> $GITHUB_OUTPUT
+          else
+            # Get changed files
+            CHANGED=$(git diff --name-only HEAD~1 HEAD | grep -E '^(docs|specs|templates)/' | tr '\n' ',' | sed 's/,$//')
+            echo "files=$CHANGED" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine affected repositories
+        id: determine-repos
+        run: |
+          if [ "${{ github.event.inputs.target_repos }}" != "" ] && [ "${{ github.event.inputs.target_repos }}" != "all" ]; then
+            echo "repos=${{ github.event.inputs.target_repos }}" >> $GITHUB_OUTPUT
+          else
+            # All NorChain repositories
+            REPOS="norchain-node,norchain-genesis,norchain-contracts,norchain-sdk,norchain-wallet-core"
+            REPOS="$REPOS,norchain-wallet-ios,norchain-wallet-android,norchain-wallet-web"
+            REPOS="$REPOS,norchain-services,norchain-payments,norchain-compliance-service"
+            REPOS="$REPOS,norchain-explorer,norchain-portal,norchain-infra"
+            echo "repos=$REPOS" >> $GITHUB_OUTPUT
+          fi
+
+  sync-to-repos:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.changed_files != ''
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: ${{ fromJson(format('["{0}"]', join(fromJson(format('["{0}"]', needs.detect-changes.outputs.affected_repos)), '","'))) }}
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: master
+
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.ORGANIZATION }}/${{ matrix.repo }}
+          token: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+          path: target
+        continue-on-error: true
+
+      - name: Sync specifications
+        if: success()
+        run: |
+          # Create .norchain directory if it doesn't exist
+          mkdir -p target/.norchain
+
+          # Sync relevant docs
+          if [ -d "master/docs" ]; then
+            cp master/docs/ROADMAP.md target/.norchain/ 2>/dev/null || true
+            cp master/docs/LEGAL_COMPLIANCE_ROADMAP.md target/.norchain/ 2>/dev/null || true
+          fi
+
+          # Sync templates
+          if [ -d "master/templates" ]; then
+            # GitHub issue templates
+            if [ -d "master/templates/github/ISSUE_TEMPLATE" ]; then
+              mkdir -p target/.github/ISSUE_TEMPLATE
+              cp -r master/templates/github/ISSUE_TEMPLATE/* target/.github/ISSUE_TEMPLATE/ 2>/dev/null || true
+            fi
+
+            # PR template
+            if [ -f "master/templates/github/PULL_REQUEST_TEMPLATE.md" ]; then
+              mkdir -p target/.github
+              cp master/templates/github/PULL_REQUEST_TEMPLATE.md target/.github/ 2>/dev/null || true
+            fi
+          fi
+
+          # Add sync marker
+          echo "Last synced: $(date -u +%Y-%m-%dT%H:%M:%SZ)" > target/.norchain/.sync-marker
+          echo "Source: ${{ github.repository }}@${{ github.sha }}" >> target/.norchain/.sync-marker
+
+      - name: Check for changes
+        id: check-changes
+        working-directory: target
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.check-changes.outputs.has_changes == 'true' && github.event.inputs.dry_run != 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.NORCHAIN_BOT_TOKEN }}
+          path: target
+          commit-message: "chore: sync specifications from master"
+          title: "chore: Sync specifications from norchain-master"
+          body: |
+            ## Automated Sync
+
+            This PR syncs specifications and templates from the [norchain-master](https://github.com/${{ github.repository }}) repository.
+
+            **Source commit**: ${{ github.sha }}
+            **Changed files**: ${{ needs.detect-changes.outputs.changed_files }}
+
+            ### What's included:
+            - Updated roadmap documentation
+            - Updated compliance requirements
+            - Updated issue/PR templates
+
+            ---
+            🤖 Generated by NorChain PM Agent
+          branch: sync/master-specs
+          delete-branch: true
+          labels: |
+            automated
+            sync
+            pm-agent
+
+  notify-completion:
+    needs: [detect-changes, sync-to-repos]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Summary
+        run: |
+          echo "## Specification Sync Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Changed Files**: ${{ needs.detect-changes.outputs.changed_files }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Target Repos**: ${{ needs.detect-changes.outputs.affected_repos }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "PRs have been created in affected repositories." >> $GITHUB_STEP_SUMMARY

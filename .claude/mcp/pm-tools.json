@@ -1,0 +1,569 @@
+{
+  "name": "norchain-pm-tools",
+  "version": "1.0.0",
+  "description": "Product Manager MCP tools for NorChain ecosystem orchestration",
+  "servers": {
+    "norchain-pm": {
+      "description": "Product Manager tools for planning, estimation, and orchestration",
+      "tools": [
+        {
+          "name": "pm_create_prd",
+          "description": "Generate a Product Requirements Document from feature description",
+          "parameters": {
+            "feature": {
+              "type": "string",
+              "required": true,
+              "description": "Feature name or description"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["feature", "epic", "enhancement", "bugfix"],
+              "default": "feature"
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["critical", "high", "medium", "low"],
+              "default": "medium"
+            },
+            "phase": {
+              "type": "number",
+              "description": "Target phase number (1-10)"
+            }
+          }
+        },
+        {
+          "name": "pm_estimate_effort",
+          "description": "Estimate effort in story points and hours for a task",
+          "parameters": {
+            "task": {
+              "type": "string",
+              "required": true,
+              "description": "Task description"
+            },
+            "complexity": {
+              "type": "string",
+              "enum": ["trivial", "simple", "medium", "complex", "very_complex"],
+              "default": "medium"
+            },
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Affected repository names"
+            },
+            "includeReview": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include code review time"
+            },
+            "includeCompliance": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include compliance review time"
+            }
+          }
+        },
+        {
+          "name": "pm_check_dependencies",
+          "description": "Analyze cross-repository dependencies for a feature",
+          "parameters": {
+            "feature": {
+              "type": "string",
+              "required": true
+            },
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "required": true,
+              "description": "Repositories to analyze"
+            },
+            "depth": {
+              "type": "string",
+              "enum": ["direct", "transitive", "full"],
+              "default": "transitive"
+            }
+          }
+        },
+        {
+          "name": "pm_compliance_gate",
+          "description": "Verify feature meets NorChain compliance requirements",
+          "parameters": {
+            "feature": {
+              "type": "string",
+              "required": true
+            },
+            "tokenType": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ", "all", "none"],
+              "default": "none",
+              "description": "Token type affected by this feature"
+            },
+            "checks": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["mica", "kyc", "private_placement", "fiat", "public_trading", "cross_border"]
+              },
+              "description": "Specific compliance checks to run"
+            }
+          }
+        },
+        {
+          "name": "pm_generate_tasks",
+          "description": "Break an epic into actionable GitHub issues",
+          "parameters": {
+            "epic": {
+              "type": "string",
+              "required": true,
+              "description": "Epic or feature description"
+            },
+            "granularity": {
+              "type": "string",
+              "enum": ["coarse", "medium", "fine"],
+              "default": "medium"
+            },
+            "assignAgents": {
+              "type": "boolean",
+              "default": true,
+              "description": "Auto-assign to domain agents"
+            },
+            "createIssues": {
+              "type": "boolean",
+              "default": false,
+              "description": "Actually create GitHub issues"
+            },
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Target repositories for issues"
+            }
+          }
+        },
+        {
+          "name": "pm_sync_milestones",
+          "description": "Synchronize milestones across multiple repositories",
+          "parameters": {
+            "milestone": {
+              "type": "string",
+              "required": true,
+              "description": "Milestone name"
+            },
+            "dueDate": {
+              "type": "string",
+              "description": "Due date (ISO format)"
+            },
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "required": true
+            },
+            "action": {
+              "type": "string",
+              "enum": ["create", "update", "close"],
+              "default": "create"
+            }
+          }
+        },
+        {
+          "name": "pm_report_progress",
+          "description": "Generate phase or sprint progress report",
+          "parameters": {
+            "scope": {
+              "type": "string",
+              "enum": ["sprint", "phase", "milestone", "repository"],
+              "default": "phase"
+            },
+            "identifier": {
+              "type": "string",
+              "description": "Sprint number, phase number, milestone name, or repo name"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["summary", "detailed", "executive"],
+              "default": "summary"
+            },
+            "includeMetrics": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "name": "pm_assign_agent",
+          "description": "Assign task to appropriate domain agent",
+          "parameters": {
+            "task": {
+              "type": "string",
+              "required": true
+            },
+            "repository": {
+              "type": "string",
+              "description": "Primary repository"
+            },
+            "suggestOnly": {
+              "type": "boolean",
+              "default": true,
+              "description": "Only suggest, don't actually assign"
+            }
+          }
+        },
+        {
+          "name": "pm_risk_score",
+          "description": "Calculate risk score for a feature or change",
+          "parameters": {
+            "feature": {
+              "type": "string",
+              "required": true
+            },
+            "changeType": {
+              "type": "string",
+              "enum": ["new_feature", "modification", "refactor", "security", "compliance"],
+              "default": "new_feature"
+            },
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        {
+          "name": "pm_rice_score",
+          "description": "Calculate RICE priority score for a feature",
+          "parameters": {
+            "feature": {
+              "type": "string",
+              "required": true
+            },
+            "reach": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Number of users/investors impacted (1-10)"
+            },
+            "impact": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Strategic importance (1-10)"
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Technical and regulatory certainty (1-10)"
+            },
+            "effort": {
+              "type": "number",
+              "description": "Estimated weeks of effort"
+            }
+          }
+        },
+        {
+          "name": "pm_phase_status",
+          "description": "Get current status of a development phase",
+          "parameters": {
+            "phase": {
+              "type": "number",
+              "required": true,
+              "minimum": 1,
+              "maximum": 10
+            },
+            "includeBlockers": {
+              "type": "boolean",
+              "default": true
+            },
+            "includeMetrics": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "name": "pm_sprint_velocity",
+          "description": "Calculate sprint velocity and capacity",
+          "parameters": {
+            "sprintNumber": {
+              "type": "number",
+              "description": "Sprint to analyze (defaults to current)"
+            },
+            "includeHistory": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include historical velocity"
+            },
+            "forecastSprints": {
+              "type": "number",
+              "default": 3,
+              "description": "Number of future sprints to forecast"
+            }
+          }
+        },
+        {
+          "name": "pm_blockers",
+          "description": "Get current blockers across repositories",
+          "parameters": {
+            "scope": {
+              "type": "string",
+              "enum": ["all", "phase", "sprint", "repository"],
+              "default": "all"
+            },
+            "identifier": {
+              "type": "string",
+              "description": "Phase number, sprint number, or repo name"
+            },
+            "includeResolutions": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "name": "pm_create_issue",
+          "description": "Create a GitHub issue in specified repository",
+          "parameters": {
+            "repository": {
+              "type": "string",
+              "required": true
+            },
+            "title": {
+              "type": "string",
+              "required": true
+            },
+            "body": {
+              "type": "string",
+              "required": true
+            },
+            "labels": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "milestone": {
+              "type": "string"
+            },
+            "assignees": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "phase": {
+              "type": "number",
+              "description": "Auto-adds phase label"
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["critical", "high", "medium", "low"]
+            }
+          }
+        },
+        {
+          "name": "pm_link_issues",
+          "description": "Link related issues across repositories",
+          "parameters": {
+            "parentIssue": {
+              "type": "string",
+              "required": true,
+              "description": "Parent issue URL or repo#number"
+            },
+            "childIssues": {
+              "type": "array",
+              "items": { "type": "string" },
+              "required": true,
+              "description": "Child issue URLs or repo#number"
+            },
+            "relationship": {
+              "type": "string",
+              "enum": ["blocks", "depends_on", "related_to", "duplicates"],
+              "default": "related_to"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-pm-github": {
+      "description": "GitHub integration tools for cross-repo orchestration",
+      "tools": [
+        {
+          "name": "github_repo_status",
+          "description": "Get status of a NorChain repository",
+          "parameters": {
+            "repository": {
+              "type": "string",
+              "required": true
+            },
+            "includeIssues": {
+              "type": "boolean",
+              "default": true
+            },
+            "includePRs": {
+              "type": "boolean",
+              "default": true
+            },
+            "includeWorkflows": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        {
+          "name": "github_all_repos_status",
+          "description": "Get status of all NorChain repositories",
+          "parameters": {
+            "filter": {
+              "type": "string",
+              "enum": ["all", "active", "stale", "blocked"],
+              "default": "all"
+            },
+            "sortBy": {
+              "type": "string",
+              "enum": ["name", "activity", "issues", "prs"],
+              "default": "activity"
+            }
+          }
+        },
+        {
+          "name": "github_sync_labels",
+          "description": "Synchronize labels across repositories",
+          "parameters": {
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "required": true
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "color": { "type": "string" },
+                  "description": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "github_cross_repo_search",
+          "description": "Search across all NorChain repositories",
+          "parameters": {
+            "query": {
+              "type": "string",
+              "required": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["code", "issues", "prs", "commits"],
+              "default": "issues"
+            },
+            "repositories": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Limit to specific repos"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-pm-analytics": {
+      "description": "Analytics and metrics tools",
+      "tools": [
+        {
+          "name": "analytics_velocity",
+          "description": "Calculate team velocity metrics",
+          "parameters": {
+            "period": {
+              "type": "string",
+              "enum": ["sprint", "month", "quarter"],
+              "default": "sprint"
+            },
+            "team": {
+              "type": "string",
+              "enum": ["all", "blockchain", "contracts", "backend", "frontend", "mobile"],
+              "default": "all"
+            }
+          }
+        },
+        {
+          "name": "analytics_burndown",
+          "description": "Generate burndown chart data",
+          "parameters": {
+            "scope": {
+              "type": "string",
+              "enum": ["sprint", "phase", "milestone"],
+              "default": "sprint"
+            },
+            "identifier": {
+              "type": "string",
+              "description": "Sprint number, phase number, or milestone name"
+            }
+          }
+        },
+        {
+          "name": "analytics_cycle_time",
+          "description": "Calculate cycle time for issues/PRs",
+          "parameters": {
+            "repository": {
+              "type": "string"
+            },
+            "period": {
+              "type": "string",
+              "enum": ["week", "month", "quarter"],
+              "default": "month"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["issues", "prs", "both"],
+              "default": "both"
+            }
+          }
+        },
+        {
+          "name": "analytics_quality",
+          "description": "Get code quality metrics",
+          "parameters": {
+            "repository": {
+              "type": "string"
+            },
+            "metrics": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["coverage", "complexity", "duplication", "tech_debt"]
+              },
+              "default": ["coverage", "tech_debt"]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "configuration": {
+    "organization": "NorChainOfficial",
+    "masterRepo": "norchain-master",
+    "defaultLabels": [
+      { "name": "phase-1", "color": "1d76db", "description": "Phase 1: Blockchain Core" },
+      { "name": "phase-2", "color": "0e8a16", "description": "Phase 2: Explorer" },
+      { "name": "phase-3", "color": "fbca04", "description": "Phase 3: Smart Contracts" },
+      { "name": "phase-4", "color": "d93f0b", "description": "Phase 4: Wallets" },
+      { "name": "phase-5", "color": "5319e7", "description": "Phase 5: SmartPay" },
+      { "name": "phase-6", "color": "006b75", "description": "Phase 6: RWA Portals" },
+      { "name": "phase-7", "color": "b60205", "description": "Phase 7: Admin Dashboard" },
+      { "name": "phase-8", "color": "0052cc", "description": "Phase 8: Coinbase" },
+      { "name": "phase-9", "color": "bfdadc", "description": "Phase 9: Documentation" },
+      { "name": "phase-10", "color": "c2e0c6", "description": "Phase 10: Compliance" },
+      { "name": "priority-critical", "color": "b60205", "description": "Critical priority" },
+      { "name": "priority-high", "color": "d93f0b", "description": "High priority" },
+      { "name": "priority-medium", "color": "fbca04", "description": "Medium priority" },
+      { "name": "priority-low", "color": "0e8a16", "description": "Low priority" },
+      { "name": "compliance", "color": "d4c5f9", "description": "Compliance-related" },
+      { "name": "security-token", "color": "f9d0c4", "description": "Affects PM-EQ or NV-EQ" },
+      { "name": "cross-repo", "color": "c5def5", "description": "Affects multiple repositories" },
+      { "name": "blocked", "color": "e99695", "description": "Blocked by dependency" }
+    ],
+    "agentMapping": {
+      "blockchain": ["norchain-node", "norchain-genesis"],
+      "contracts": ["norchain-contracts"],
+      "backend": ["norchain-services", "norchain-payments", "norchain-compliance-service"],
+      "frontend": ["norchain-explorer", "norchain-wallet-web", "norchain-portal"],
+      "mobile": ["norchain-wallet-ios", "norchain-wallet-android"]
+    }
+  }
+}
