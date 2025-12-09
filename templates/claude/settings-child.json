@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "norchain-dashboard": {
+      "command": "node",
+      "args": ["../Master/dashboard/mcp-server/dist/index.js"],
+      "env": {
+        "SUPABASE_URL": "${env:SUPABASE_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${env:SUPABASE_SERVICE_ROLE_KEY}"
+      }
+    }
+  }
+}

@@ -147,6 +147,24 @@ jobs:
             cp ../master/docs/LEGAL_COMPLIANCE_ROADMAP.md .norchain/ 2>/dev/null || true
           fi
 
+          # Copy CLAUDE.md template with variable substitution
+          if [ -f "../master/templates/docs/CLAUDE-child.md" ]; then
+            REPO_NAME="${{ github.event.inputs.repo_name }}"
+            PHASE="${{ github.event.inputs.phase }}"
+            DOMAIN="${{ github.event.inputs.domain }}"
+
+            sed -e "s/{REPO_NAME}/$REPO_NAME/g" \
+                -e "s/{PHASE_NUMBER}/$PHASE/g" \
+                -e "s/{DOMAIN}/$DOMAIN/g" \
+                ../master/templates/docs/CLAUDE-child.md > CLAUDE.md
+          fi
+
+          # Copy .claude settings for MCP server access
+          mkdir -p .claude
+          if [ -f "../master/templates/claude/settings-child.json" ]; then
+            cp ../master/templates/claude/settings-child.json .claude/settings.local.json
+          fi
+
       - name: Generate README
         run: |
           cd target
@@ -621,6 +639,8 @@ jobs:
           echo "| URL | https://github.com/${{ env.ORGANIZATION }}/${{ github.event.inputs.repo_name }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### What Was Created" >> $GITHUB_STEP_SUMMARY
+          echo "- CLAUDE.md (with dashboard sync protocol)" >> $GITHUB_STEP_SUMMARY
+          echo "- .claude/settings.local.json (MCP server config)" >> $GITHUB_STEP_SUMMARY
           echo "- README.md" >> $GITHUB_STEP_SUMMARY
           echo "- CONTRIBUTING.md" >> $GITHUB_STEP_SUMMARY
           echo "- .gitignore" >> $GITHUB_STEP_SUMMARY

@@ -8,6 +8,7 @@ on:
       - 'docs/**'
       - 'specs/**'
       - 'templates/**'
+      - 'CLAUDE.md'
   workflow_dispatch:
     inputs:
       target_repos:
@@ -108,6 +109,26 @@ jobs:
             fi
           fi
 
+          # Sync CLAUDE.md for child repos
+          if [ -f "master/templates/docs/CLAUDE-child.md" ]; then
+            # Read repo config for variable substitution
+            REPO_NAME="${{ matrix.repo }}"
+            PHASE=$(grep -oP 'phase:\s*\K\d+' target/.norchain/config.yml 2>/dev/null || echo "1")
+            DOMAIN=$(grep -oP 'domain:\s*\K\w+' target/.norchain/config.yml 2>/dev/null || echo "unknown")
+
+            # Copy and substitute variables
+            sed -e "s/{REPO_NAME}/$REPO_NAME/g" \
+                -e "s/{PHASE_NUMBER}/$PHASE/g" \
+                -e "s/{DOMAIN}/$DOMAIN/g" \
+                master/templates/docs/CLAUDE-child.md > target/CLAUDE.md
+          fi
+
+          # Sync .claude/settings.local.json for MCP server access
+          mkdir -p target/.claude
+          if [ -f "master/templates/claude/settings-child.json" ]; then
+            cp master/templates/claude/settings-child.json target/.claude/settings.local.json
+          fi
+
           # Add sync marker
           echo "Last synced: $(date -u +%Y-%m-%dT%H:%M:%SZ)" > target/.norchain/.sync-marker
           echo "Source: ${{ github.repository }}@${{ github.sha }}" >> target/.norchain/.sync-marker
@@ -139,6 +160,8 @@ jobs:
             **Changed files**: ${{ needs.detect-changes.outputs.changed_files }}
 
             ### What's included:
+            - Updated CLAUDE.md with dashboard sync protocol
+            - Updated .claude/settings.local.json for MCP access
             - Updated roadmap documentation
             - Updated compliance requirements
             - Updated issue/PR templates
