@@ -1,0 +1,1383 @@
+{
+  "name": "norchain-mcp-tools",
+  "version": "2.0.0",
+  "description": "Comprehensive MCP server configuration for NorChain ecosystem development",
+  "servers": {
+    "norchain-blockchain": {
+      "description": "Core blockchain interaction tools",
+      "tools": [
+        {
+          "name": "nor_getBlockNumber",
+          "description": "Get the current block number",
+          "parameters": {
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getBlock",
+          "description": "Get block by number or hash",
+          "parameters": {
+            "blockId": {
+              "type": "string",
+              "required": true,
+              "description": "Block number or hash"
+            },
+            "fullTransactions": {
+              "type": "boolean",
+              "default": false
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getBalance",
+          "description": "Get NOR balance for an address",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "blockTag": {
+              "type": "string",
+              "default": "latest"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getTransaction",
+          "description": "Get transaction details by hash",
+          "parameters": {
+            "hash": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getTransactionReceipt",
+          "description": "Get transaction receipt with logs",
+          "parameters": {
+            "hash": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_sendRawTransaction",
+          "description": "Submit signed transaction to network",
+          "parameters": {
+            "signedTx": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_estimateGas",
+          "description": "Estimate gas for transaction",
+          "parameters": {
+            "from": {
+              "type": "string",
+              "required": true
+            },
+            "to": {
+              "type": "string",
+              "required": true
+            },
+            "data": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_gasPrice",
+          "description": "Get current gas price",
+          "parameters": {
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getCode",
+          "description": "Get contract bytecode at address",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_call",
+          "description": "Execute read-only contract call",
+          "parameters": {
+            "to": {
+              "type": "string",
+              "required": true
+            },
+            "data": {
+              "type": "string",
+              "required": true
+            },
+            "blockTag": {
+              "type": "string",
+              "default": "latest"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getLogs",
+          "description": "Get event logs with filters",
+          "parameters": {
+            "address": {
+              "type": "string"
+            },
+            "topics": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "fromBlock": {
+              "type": "string",
+              "default": "latest"
+            },
+            "toBlock": {
+              "type": "string",
+              "default": "latest"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "nor_getTransactionCount",
+          "description": "Get nonce for address",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "blockTag": {
+              "type": "string",
+              "default": "pending"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-validator": {
+      "description": "Validator and consensus tools",
+      "tools": [
+        {
+          "name": "validator_list",
+          "description": "Get list of active validators",
+          "parameters": {
+            "epoch": {
+              "type": "number",
+              "description": "Epoch number, defaults to current"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "validator_info",
+          "description": "Get validator details",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "validator_stake",
+          "description": "Get staking information for validator",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "validator_rewards",
+          "description": "Get validator rewards history",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "fromEpoch": {
+              "type": "number"
+            },
+            "toEpoch": {
+              "type": "number"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "validator_slashing",
+          "description": "Get slashing events for validator",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "consensus_epoch",
+          "description": "Get current epoch information",
+          "parameters": {
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-contracts": {
+      "description": "Smart contract development and interaction tools",
+      "tools": [
+        {
+          "name": "contract_compile",
+          "description": "Compile Solidity contracts with Hardhat",
+          "parameters": {
+            "path": {
+              "type": "string",
+              "required": true,
+              "description": "Path to contract or contracts directory"
+            },
+            "optimizer": {
+              "type": "boolean",
+              "default": true
+            },
+            "runs": {
+              "type": "number",
+              "default": 200
+            }
+          }
+        },
+        {
+          "name": "contract_deploy",
+          "description": "Deploy contract to network",
+          "parameters": {
+            "contract": {
+              "type": "string",
+              "required": true
+            },
+            "args": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            },
+            "gasLimit": {
+              "type": "number"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "name": "contract_verify",
+          "description": "Verify contract source on explorer",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "contract": {
+              "type": "string",
+              "required": true
+            },
+            "args": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "contract_test",
+          "description": "Run contract tests",
+          "parameters": {
+            "path": {
+              "type": "string",
+              "description": "Test file or directory"
+            },
+            "grep": {
+              "type": "string",
+              "description": "Filter tests by name"
+            },
+            "coverage": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        },
+        {
+          "name": "contract_abi",
+          "description": "Get contract ABI",
+          "parameters": {
+            "contract": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "contract_encode",
+          "description": "Encode function call data",
+          "parameters": {
+            "contract": {
+              "type": "string",
+              "required": true
+            },
+            "function": {
+              "type": "string",
+              "required": true
+            },
+            "args": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        {
+          "name": "contract_decode",
+          "description": "Decode transaction data or logs",
+          "parameters": {
+            "contract": {
+              "type": "string",
+              "required": true
+            },
+            "data": {
+              "type": "string",
+              "required": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["function", "event"],
+              "default": "function"
+            }
+          }
+        },
+        {
+          "name": "contract_slither",
+          "description": "Run Slither security analysis",
+          "parameters": {
+            "path": {
+              "type": "string",
+              "required": true
+            },
+            "detectors": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        {
+          "name": "contract_size",
+          "description": "Check contract bytecode size",
+          "parameters": {
+            "contract": {
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      ]
+    },
+    "norchain-tokens": {
+      "description": "Token-specific tools for NOR, PM-EQ, NV-EQ",
+      "tools": [
+        {
+          "name": "token_info",
+          "description": "Get token metadata and supply",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "token_balance",
+          "description": "Get token balance for address",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "token_holders",
+          "description": "Get list of token holders",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "limit": {
+              "type": "number",
+              "default": 100
+            },
+            "offset": {
+              "type": "number",
+              "default": 0
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "token_transfers",
+          "description": "Get token transfer history",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "address": {
+              "type": "string",
+              "description": "Filter by address"
+            },
+            "fromBlock": {
+              "type": "number"
+            },
+            "toBlock": {
+              "type": "number"
+            },
+            "limit": {
+              "type": "number",
+              "default": 100
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "token_allowance",
+          "description": "Get token allowance",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "owner": {
+              "type": "string",
+              "required": true
+            },
+            "spender": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-compliance": {
+      "description": "Compliance, KYC, and AML tools",
+      "tools": [
+        {
+          "name": "kyc_status",
+          "description": "Check KYC verification status for address",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "kyc_details",
+          "description": "Get KYC verification details (authorized only)",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "whitelist_check",
+          "description": "Check if address is whitelisted for security tokens",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "whitelist_list",
+          "description": "Get all whitelisted addresses for token",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "limit": {
+              "type": "number",
+              "default": 100
+            },
+            "offset": {
+              "type": "number",
+              "default": 0
+            }
+          }
+        },
+        {
+          "name": "sanctions_check",
+          "description": "Check address against sanctions lists",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "risk_score",
+          "description": "Get risk score for address",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "compliance_report",
+          "description": "Generate compliance report",
+          "parameters": {
+            "type": {
+              "type": "string",
+              "enum": ["daily", "weekly", "monthly", "quarterly", "annual"],
+              "default": "daily"
+            },
+            "token": {
+              "type": "string",
+              "enum": ["NOR", "PM-EQ", "NV-EQ", "all"],
+              "default": "all"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["json", "pdf", "csv"],
+              "default": "json"
+            }
+          }
+        },
+        {
+          "name": "audit_trail",
+          "description": "Get audit trail for address or transaction",
+          "parameters": {
+            "type": {
+              "type": "string",
+              "enum": ["address", "transaction"],
+              "required": true
+            },
+            "id": {
+              "type": "string",
+              "required": true
+            },
+            "fromDate": {
+              "type": "string"
+            },
+            "toDate": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "name": "investor_registry",
+          "description": "Query investor registry",
+          "parameters": {
+            "address": {
+              "type": "string"
+            },
+            "jurisdiction": {
+              "type": "string"
+            },
+            "shareClass": {
+              "type": "string",
+              "enum": ["A", "B"]
+            },
+            "limit": {
+              "type": "number",
+              "default": 100
+            }
+          }
+        }
+      ]
+    },
+    "norchain-smartpay": {
+      "description": "SmartPay/NorPay payment processing tools",
+      "tools": [
+        {
+          "name": "smartpay_create",
+          "description": "Create new SmartPay payment session",
+          "parameters": {
+            "investorAddress": {
+              "type": "string",
+              "required": true
+            },
+            "amount": {
+              "type": "string",
+              "required": true,
+              "description": "Amount in NOR"
+            },
+            "targetToken": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "smartpay_status",
+          "description": "Get payment session status",
+          "parameters": {
+            "sessionId": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "smartpay_escrow_balance",
+          "description": "Get escrow balance for session",
+          "parameters": {
+            "sessionId": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "smartpay_release",
+          "description": "Release tokens from escrow (treasury only)",
+          "parameters": {
+            "sessionId": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "smartpay_refund",
+          "description": "Process refund for session",
+          "parameters": {
+            "sessionId": {
+              "type": "string",
+              "required": true
+            },
+            "reason": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "smartpay_history",
+          "description": "Get payment history for address",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "status": {
+              "type": "string",
+              "enum": ["pending", "completed", "refunded", "all"],
+              "default": "all"
+            },
+            "limit": {
+              "type": "number",
+              "default": 50
+            }
+          }
+        },
+        {
+          "name": "onramp_providers",
+          "description": "Get available on-ramp providers",
+          "parameters": {
+            "currency": {
+              "type": "string",
+              "description": "FIAT currency code (USD, EUR, etc.)"
+            },
+            "country": {
+              "type": "string",
+              "description": "ISO country code"
+            }
+          }
+        },
+        {
+          "name": "onramp_quote",
+          "description": "Get quote from on-ramp provider",
+          "parameters": {
+            "provider": {
+              "type": "string",
+              "enum": ["moonpay", "transak", "ramp", "banxa"],
+              "required": true
+            },
+            "fiatAmount": {
+              "type": "string",
+              "required": true
+            },
+            "fiatCurrency": {
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      ]
+    },
+    "norchain-certificates": {
+      "description": "Certificate registry and management tools",
+      "tools": [
+        {
+          "name": "certificate_get",
+          "description": "Get certificate for investor",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "certificate_verify",
+          "description": "Verify certificate hash",
+          "parameters": {
+            "hash": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "certificate_history",
+          "description": "Get certificate amendment history",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "certificate_download",
+          "description": "Get certificate download URL",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "format": {
+              "type": "string",
+              "enum": ["pdf", "json"],
+              "default": "pdf"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-explorer": {
+      "description": "Block explorer API tools",
+      "tools": [
+        {
+          "name": "explorer_search",
+          "description": "Search for blocks, transactions, addresses, or tokens",
+          "parameters": {
+            "query": {
+              "type": "string",
+              "required": true
+            },
+            "type": {
+              "type": "string",
+              "enum": ["all", "block", "transaction", "address", "token"],
+              "default": "all"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "explorer_stats",
+          "description": "Get network statistics",
+          "parameters": {
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "explorer_address",
+          "description": "Get address details with balances and history",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "explorer_contract",
+          "description": "Get contract details with source and ABI",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "explorer_blocks",
+          "description": "Get recent blocks",
+          "parameters": {
+            "limit": {
+              "type": "number",
+              "default": 10
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "explorer_transactions",
+          "description": "Get recent transactions",
+          "parameters": {
+            "limit": {
+              "type": "number",
+              "default": 10
+            },
+            "address": {
+              "type": "string",
+              "description": "Filter by address"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "explorer_charts",
+          "description": "Get chart data for network metrics",
+          "parameters": {
+            "metric": {
+              "type": "string",
+              "enum": ["transactions", "blocks", "gas", "addresses", "tokens"],
+              "required": true
+            },
+            "period": {
+              "type": "string",
+              "enum": ["24h", "7d", "30d", "90d", "1y"],
+              "default": "7d"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-wallet": {
+      "description": "Wallet development and testing tools",
+      "tools": [
+        {
+          "name": "wallet_create",
+          "description": "Create new wallet (devnet only)",
+          "parameters": {
+            "type": {
+              "type": "string",
+              "enum": ["random", "mnemonic"],
+              "default": "random"
+            }
+          }
+        },
+        {
+          "name": "wallet_import",
+          "description": "Import wallet from mnemonic or private key (devnet only)",
+          "parameters": {
+            "type": {
+              "type": "string",
+              "enum": ["mnemonic", "privateKey"],
+              "required": true
+            },
+            "value": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "wallet_sign",
+          "description": "Sign message or transaction (devnet only)",
+          "parameters": {
+            "type": {
+              "type": "string",
+              "enum": ["message", "transaction"],
+              "required": true
+            },
+            "data": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "wallet_faucet",
+          "description": "Request testnet/devnet NOR from faucet",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "amount": {
+              "type": "string",
+              "default": "100"
+            },
+            "network": {
+              "type": "string",
+              "enum": ["testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-admin": {
+      "description": "Admin and management tools",
+      "tools": [
+        {
+          "name": "admin_pause_token",
+          "description": "Pause security token transfers (emergency)",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "reason": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "admin_unpause_token",
+          "description": "Unpause security token transfers",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "admin_whitelist_add",
+          "description": "Add address to security token whitelist",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "admin_whitelist_remove",
+          "description": "Remove address from security token whitelist",
+          "parameters": {
+            "token": {
+              "type": "string",
+              "enum": ["PM-EQ", "NV-EQ"],
+              "required": true
+            },
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "admin_treasury_balance",
+          "description": "Get treasury vault balances",
+          "parameters": {
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        },
+        {
+          "name": "admin_multisig_pending",
+          "description": "Get pending multisig transactions",
+          "parameters": {
+            "network": {
+              "type": "string",
+              "enum": ["mainnet", "testnet", "devnet"],
+              "default": "devnet"
+            }
+          }
+        }
+      ]
+    },
+    "norchain-dev": {
+      "description": "Development and debugging tools",
+      "tools": [
+        {
+          "name": "dev_node_start",
+          "description": "Start local development node",
+          "parameters": {
+            "blockTime": {
+              "type": "number",
+              "default": 1
+            },
+            "accounts": {
+              "type": "number",
+              "default": 10
+            },
+            "balance": {
+              "type": "string",
+              "default": "10000"
+            }
+          }
+        },
+        {
+          "name": "dev_node_stop",
+          "description": "Stop local development node",
+          "parameters": {}
+        },
+        {
+          "name": "dev_node_reset",
+          "description": "Reset local development node state",
+          "parameters": {}
+        },
+        {
+          "name": "dev_mine",
+          "description": "Mine blocks on devnet",
+          "parameters": {
+            "blocks": {
+              "type": "number",
+              "default": 1
+            }
+          }
+        },
+        {
+          "name": "dev_set_balance",
+          "description": "Set account balance on devnet",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            },
+            "balance": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "dev_impersonate",
+          "description": "Impersonate account on devnet",
+          "parameters": {
+            "address": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "dev_snapshot",
+          "description": "Create devnet state snapshot",
+          "parameters": {}
+        },
+        {
+          "name": "dev_revert",
+          "description": "Revert to devnet snapshot",
+          "parameters": {
+            "snapshotId": {
+              "type": "string",
+              "required": true
+            }
+          }
+        },
+        {
+          "name": "dev_trace",
+          "description": "Get transaction trace for debugging",
+          "parameters": {
+            "hash": {
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      ]
+    }
+  },
+  "networkConfig": {
+    "mainnet": {
+      "chainId": 8453,
+      "rpcUrl": "https://rpc.norchain.org",
+      "wsUrl": "wss://ws.norchain.org",
+      "explorerUrl": "https://explorer.norchain.org",
+      "explorerApi": "https://api.explorer.norchain.org"
+    },
+    "testnet": {
+      "chainId": 84531,
+      "rpcUrl": "https://testnet-rpc.norchain.org",
+      "wsUrl": "wss://testnet-ws.norchain.org",
+      "explorerUrl": "https://testnet-explorer.norchain.org",
+      "explorerApi": "https://testnet-api.explorer.norchain.org",
+      "faucetUrl": "https://faucet.norchain.org"
+    },
+    "devnet": {
+      "chainId": 31337,
+      "rpcUrl": "http://localhost:8545",
+      "wsUrl": "ws://localhost:8546",
+      "explorerUrl": "http://localhost:3000",
+      "explorerApi": "http://localhost:3001"
+    }
+  },
+  "contracts": {
+    "mainnet": {
+      "NOR": "0x...",
+      "PMEQ": "0x...",
+      "NVEQ": "0x...",
+      "InvestorRegistry": "0x...",
+      "CertificateRegistry": "0x...",
+      "SmartPayEscrow": "0x...",
+      "DistributionVault": "0x...",
+      "Treasury": "0x..."
+    },
+    "testnet": {
+      "NOR": "0x...",
+      "PMEQ": "0x...",
+      "NVEQ": "0x...",
+      "InvestorRegistry": "0x...",
+      "CertificateRegistry": "0x...",
+      "SmartPayEscrow": "0x...",
+      "DistributionVault": "0x...",
+      "Treasury": "0x..."
+    }
+  },
+  "onrampProviders": {
+    "moonpay": {
+      "name": "MoonPay",
+      "apiUrl": "https://api.moonpay.com",
+      "supportedCurrencies": ["USD", "EUR", "GBP", "CAD", "AUD"],
+      "supportedCountries": ["US", "EU", "UK", "CA", "AU"]
+    },
+    "transak": {
+      "name": "Transak",
+      "apiUrl": "https://api.transak.com",
+      "supportedCurrencies": ["USD", "EUR", "GBP", "INR"],
+      "supportedCountries": ["US", "EU", "UK", "IN"]
+    },
+    "ramp": {
+      "name": "Ramp Network",
+      "apiUrl": "https://api.ramp.network",
+      "supportedCurrencies": ["EUR", "GBP", "PLN"],
+      "supportedCountries": ["EU", "UK", "PL"]
+    },
+    "banxa": {
+      "name": "Banxa",
+      "apiUrl": "https://api.banxa.com",
+      "supportedCurrencies": ["USD", "EUR", "AUD", "CAD"],
+      "supportedCountries": ["US", "EU", "AU", "CA"]
+    }
+  }
+}

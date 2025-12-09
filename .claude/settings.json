@@ -1,0 +1,98 @@
+{
+  "project": {
+    "name": "NorChain Ecosystem",
+    "version": "1.0.0",
+    "description": "NorChain blockchain ecosystem with RWA tokenization"
+  },
+  "agents": {
+    "default": "norchain-development",
+    "available": [
+      "norchain-blockchain-agent",
+      "norchain-contract-agent",
+      "norchain-backend-agent",
+      "norchain-frontend-agent",
+      "norchain-mobile-agent"
+    ]
+  },
+  "skills": {
+    "autoLoad": [
+      "norchain-development"
+    ],
+    "available": [
+      "norchain-development",
+      "smartpay-integration",
+      "security-token",
+      "wallet-development",
+      "compliance-development"
+    ]
+  },
+  "commands": {
+    "prefix": "norchain-",
+    "available": [
+      "norchain-status",
+      "norchain-phase",
+      "norchain-task",
+      "norchain-compliance",
+      "norchain-repo",
+      "norchain-contract",
+      "norchain-init",
+      "smartpay"
+    ]
+  },
+  "context": {
+    "alwaysInclude": [
+      "CLAUDE.md",
+      "docs/ROADMAP.md",
+      "docs/LEGAL_COMPLIANCE_ROADMAP.md"
+    ],
+    "conditionalInclude": {
+      "contracts": ["docs/DEVELOPER_TASKS.md"],
+      "frontend": ["docs/REPOSITORY_STRUCTURE.md"],
+      "backend": ["docs/REPOSITORY_STRUCTURE.md"],
+      "mobile": ["docs/REPOSITORY_STRUCTURE.md"]
+    }
+  },
+  "compliance": {
+    "strategy": "Private First — Regulated Later",
+    "tokens": {
+      "NOR": {
+        "type": "utility",
+        "tradability": "public",
+        "kycRequired": false
+      },
+      "PM-EQ": {
+        "type": "security",
+        "tradability": "private",
+        "kycRequired": true
+      },
+      "NV-EQ": {
+        "type": "security",
+        "tradability": "private",
+        "kycRequired": true
+      }
+    },
+    "rules": [
+      "NorChain never handles FIAT",
+      "Security tokens require KYC for all transfers",
+      "No public DEX/CEX for security tokens"
+    ]
+  },
+  "networks": {
+    "mainnet": {
+      "chainId": 8453,
+      "blockTime": "3s"
+    },
+    "testnet": {
+      "chainId": 84531,
+      "blockTime": "2s"
+    },
+    "devnet": {
+      "chainId": 31337,
+      "blockTime": "1s"
+    }
+  },
+  "hooks": {
+    "enabled": true,
+    "configPath": ".claude/hooks/"
+  }
+}
