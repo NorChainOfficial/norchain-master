@@ -1,0 +1,110 @@
+{
+  "name": "norchain-dashboard",
+  "version": "1.0.0",
+  "description": "NorChain PM Dashboard - Full CRUD for tasks, phases, repos, compliance",
+  "command": "node",
+  "args": ["dashboard/mcp-server/dist/index.js"],
+  "cwd": "${workspaceFolder}",
+  "env": {
+    "SUPABASE_URL": "${env:SUPABASE_URL}",
+    "SUPABASE_SERVICE_ROLE_KEY": "${env:SUPABASE_SERVICE_ROLE_KEY}"
+  },
+  "tools": [
+    {
+      "name": "create_task",
+      "description": "Create a new task"
+    },
+    {
+      "name": "update_task", 
+      "description": "Update task status, title, assignee"
+    },
+    {
+      "name": "delete_task",
+      "description": "Delete a task"
+    },
+    {
+      "name": "bulk_update_tasks",
+      "description": "Update multiple tasks at once"
+    },
+    {
+      "name": "bulk_delete_tasks",
+      "description": "Delete multiple tasks"
+    },
+    {
+      "name": "get_tasks",
+      "description": "Query tasks with filters"
+    },
+    {
+      "name": "update_phase",
+      "description": "Update phase progress/status"
+    },
+    {
+      "name": "get_phases",
+      "description": "Get all phases with deliverables"
+    },
+    {
+      "name": "create_deliverable",
+      "description": "Add deliverable to phase"
+    },
+    {
+      "name": "update_deliverable",
+      "description": "Update deliverable status"
+    },
+    {
+      "name": "delete_deliverable",
+      "description": "Remove deliverable"
+    },
+    {
+      "name": "create_repository",
+      "description": "Add repository to dashboard"
+    },
+    {
+      "name": "update_repository",
+      "description": "Update repo info"
+    },
+    {
+      "name": "delete_repository",
+      "description": "Remove repository"
+    },
+    {
+      "name": "get_repositories",
+      "description": "Query repositories"
+    },
+    {
+      "name": "create_compliance_item",
+      "description": "Add compliance checklist item"
+    },
+    {
+      "name": "update_compliance",
+      "description": "Update compliance status"
+    },
+    {
+      "name": "delete_compliance_item",
+      "description": "Remove compliance item"
+    },
+    {
+      "name": "get_compliance",
+      "description": "Get compliance checklist"
+    },
+    {
+      "name": "create_token",
+      "description": "Add token to tracking"
+    },
+    {
+      "name": "update_token",
+      "description": "Update token info"
+    },
+    {
+      "name": "log_activity",
+      "description": "Log activity event"
+    },
+    {
+      "name": "get_activity",
+      "description": "Get activity log"
+    },
+    {
+      "name": "get_dashboard_stats",
+      "description": "Get dashboard statistics"
+    }
+  ]
+}

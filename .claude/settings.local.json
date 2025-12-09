@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "norchain-dashboard": {
+      "command": "node",
+      "args": ["/Volumes/Development/Norchain Official/Master/dashboard/mcp-server/dist/index.js"],
+      "env": {
+        "SUPABASE_URL": "https://pffculvvijvdfqblymfm.supabase.co",
+        "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmZmN1bHZ2aWp2ZGZxYmx5bWZtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTMwNDA5OSwiZXhwIjoyMDgwODgwMDk5fQ.lXMXHmn-qT7C_wxdG3X2ucMJek7VO4cmVuihFNZC3hY"
+      }
+    }
+  }
+}

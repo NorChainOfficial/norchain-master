@@ -49,6 +49,121 @@ This is the **NorChain Master Repository** - an AI-powered Product Manager Hub t
 | `/norchain-init <type>` | Initialize new repository |
 | `/smartpay <action>` | SmartPay integration helpers |
 
+## 🎯 Dashboard Integration (CRITICAL - MANDATORY)
+
+**The PM Dashboard is the single source of truth for all project management.**
+
+The dashboard at `dashboard/` is backed by Supabase and tracks all project progress via the `norchain-dashboard` MCP server.
+
+### MANDATORY: Session Start Protocol
+
+**At the START of every coding session, ALWAYS run:**
+
+```
+get_dashboard_stats
+```
+
+This ensures you are synced with the current project state before making any changes.
+
+### MANDATORY: Task Lifecycle Protocol
+
+**EVERY task MUST follow this workflow:**
+
+| Step | MCP Tool | When |
+|------|----------|------|
+| 1. Check available tasks | `get_tasks phase_id=<current>` | Before starting work |
+| 2. Start task | `update_task task_id="tX-Y" status="in_progress"` | When beginning work |
+| 3. Log start | `log_activity type="task_update" ...` | Immediately after #2 |
+| 4. Complete task | `update_task task_id="tX-Y" status="done"` | When work is finished |
+| 5. Update phase | `update_phase phase_id=X progress=Y` | After completing tasks |
+| 6. Log completion | `log_activity type="task_update" ...` | Immediately after #4 |
+
+### Quick Dashboard Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/db-stats` | Get current dashboard statistics |
+| `/db-tasks [filters]` | List tasks with optional filters |
+| `/db-start-task <id>` | Start working on a task |
+| `/db-complete-task <id>` | Mark task as done |
+| `/db-create-task <details>` | Create a new task |
+| `/db-phases` | View all phases with deliverables |
+| `/db-update-phase <id> <updates>` | Update phase progress |
+| `/db-compliance` | View compliance checklist |
+| `/db-repos` | List tracked repositories |
+| `/db-activity` | View recent activity log |
+| `/db-sync` | Sync and verify dashboard data |
+
+### MCP Tools Reference
+
+**Tasks (6 tools):**
+```
+get_tasks           - Query tasks (phase_id, status, role filters)
+create_task         - Create new task (id, title, role, phase_id required)
+update_task         - Update task (task_id required)
+delete_task         - Delete task
+bulk_update_tasks   - Update multiple tasks
+bulk_delete_tasks   - Delete multiple tasks
+```
+
+**Phases (2 tools):**
+```
+get_phases          - Get all phases with deliverables
+update_phase        - Update phase progress/status
+```
+
+**Deliverables (3 tools):**
+```
+create_deliverable  - Add deliverable to phase
+update_deliverable  - Update deliverable status
+delete_deliverable  - Remove deliverable
+```
+
+**Repositories (4 tools):**
+```
+get_repositories    - Query repos (category, visibility filters)
+create_repository   - Add repository
+update_repository   - Update repo info
+delete_repository   - Remove repository
+```
+
+**Compliance (4 tools):**
+```
+get_compliance      - Get checklist and tokens
+create_compliance_item - Add compliance item
+update_compliance   - Update compliance status
+delete_compliance_item - Remove compliance item
+```
+
+**Tokens (2 tools):**
+```
+create_token        - Add token to tracking
+update_token        - Update token info
+```
+
+**Activity & Stats (3 tools):**
+```
+get_dashboard_stats - Get full statistics summary
+get_activity        - Get recent activity log
+log_activity        - Log activity event
+```
+
+### Activity Types
+
+Use these types when logging activities:
+- `task_update` - Task status changes
+- `phase_update` - Phase progress changes
+- `compliance_update` - Compliance item updates
+- `commit` - Git commits
+- `issue` - GitHub issues
+- `pr` - Pull requests
+- `release` - Releases
+- `milestone` - Milestone updates
+
+### Full Tool Reference
+
+See `.claude/commands/dashboard.md` for complete documentation.
+
 ## Repository Structure
 
 ```

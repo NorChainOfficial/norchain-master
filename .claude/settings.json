@@ -78,8 +78,41 @@
       "compliance-development"
     ]
   },
+  "dashboard": {
+    "enabled": true,
+    "enforceSync": true,
+    "supabaseProject": "pffculvvijvdfqblymfm",
+    "mcpServer": "norchain-dashboard",
+    "mandatory": {
+      "sessionStart": ["get_dashboard_stats"],
+      "taskStart": ["update_task", "log_activity"],
+      "taskComplete": ["update_task", "log_activity", "update_phase"]
+    },
+    "tools": [
+      "create_task", "update_task", "delete_task", "bulk_update_tasks", "bulk_delete_tasks", "get_tasks",
+      "update_phase", "get_phases",
+      "create_deliverable", "update_deliverable", "delete_deliverable",
+      "create_repository", "update_repository", "delete_repository", "get_repositories",
+      "create_compliance_item", "update_compliance", "delete_compliance_item", "get_compliance",
+      "create_token", "update_token",
+      "log_activity", "get_activity", "get_dashboard_stats"
+    ]
+  },
   "commands": {
-    "prefixes": ["pm-", "norchain-"],
+    "prefixes": ["pm-", "norchain-", "db-"],
+    "db": [
+      "db-stats",
+      "db-tasks",
+      "db-start-task",
+      "db-complete-task",
+      "db-create-task",
+      "db-phases",
+      "db-update-phase",
+      "db-compliance",
+      "db-repos",
+      "db-activity",
+      "db-sync"
+    ],
     "pm": [
       "pm-plan",
       "pm-review",

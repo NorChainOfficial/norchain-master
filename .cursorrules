@@ -1,0 +1,130 @@
+# NorChain Master Repository - Cursor Rules
+
+## 🚨 CRITICAL: Dashboard Synchronization
+
+**YOU MUST ALWAYS keep the PM Dashboard in sync with your work.**
+
+Every task you start, complete, or create MUST be reflected in the Supabase database via the dashboard MCP tools or API.
+
+---
+
+## MANDATORY Actions
+
+### When Starting ANY Task:
+```
+1. FIRST: update_task task_id="<id>" status="in_progress"
+2. THEN: log_activity type="task_update" title="Started <task>" entity_type="task" entity_id="<id>"
+3. FINALLY: Begin the actual work
+```
+
+### When Completing ANY Task:
+```
+1. FIRST: Finish the actual work
+2. THEN: update_task task_id="<id>" status="done"
+3. THEN: log_activity type="task_update" title="Completed <task>" entity_type="task" entity_id="<id>"
+4. FINALLY: update_phase phase_id=<n> progress=<new_percentage> (if applicable)
+```
+
+### When Creating New Work:
+```
+1. create_task id="<id>" title="<title>" role="<role>" phase_id=<n> priority="<priority>"
+2. log_activity type="task_update" title="Created task <id>" entity_type="task" entity_id="<id>"
+```
+
+---
+
+## Quick Reference Commands
+
+| Action | Command/Tool |
+|--------|--------------|
+| Check status | `get_dashboard_stats` |
+| List tasks | `get_tasks` |
+| Start task | `update_task task_id="t1-X" status="in_progress"` |
+| Complete task | `update_task task_id="t1-X" status="done"` |
+| Create task | `create_task id="..." title="..." role="..." phase_id=N` |
+| Update phase | `update_phase phase_id=N progress=X` |
+| View phases | `get_phases` |
+| Log activity | `log_activity type="..." title="..." entity_type="..." entity_id="..."` |
+| View activity | `get_activity` |
+| Compliance | `get_compliance` / `update_compliance` |
+| Repositories | `get_repositories` / `create_repository` / `update_repository` |
+
+---
+
+## Available Roles
+
+- `blockchain` - Blockchain/node development (Go, PoSA)
+- `contract` - Smart contract development (Solidity)
+- `backend` - Backend services (NestJS, PostgreSQL)
+- `frontend` - Web frontend (Next.js, React)
+- `mobile-ios` - iOS development (Swift)
+- `mobile-android` - Android development (Kotlin)
+- `devops` - Infrastructure/DevOps
+
+---
+
+## Task Statuses
+
+- `backlog` - Not started
+- `in_progress` - Currently being worked on
+- `review` - In code review
+- `done` - Completed
+
+---
+
+## Phase Statuses
+
+- `pending` - Not yet started
+- `active` - Currently in progress
+- `complete` - Finished
+
+---
+
+## 🔒 Compliance Rules (NEVER VIOLATE)
+
+1. **NEVER** enable public trading for security tokens (PM-EQ, NV-EQ)
+2. **NEVER** integrate DEX/CEX for security tokens
+3. **NEVER** bypass KYC verification for security tokens
+4. **NEVER** handle FIAT directly
+5. **ALWAYS** maintain private placement status
+6. **ALWAYS** include pause mechanisms for security tokens
+7. **ALWAYS** require whitelist verification for transfers
+
+---
+
+## Token Classification
+
+| Token | Type | Tradability | KYC Required |
+|-------|------|-------------|--------------|
+| NOR | Utility | Public | Optional |
+| PM-EQ | Security | Private Only | Required |
+| NV-EQ | Security | Private Only | Required |
+
+---
+
+## Strategy Reference
+
+**"Private First — Regulated Later"**
+
+- Domain: norchain.org (NOT norchain.io)
+- Phase numbering: 1-10 for MVP, 11+ for future
+
+---
+
+## Project Structure
+
+- `dashboard/` - PM Dashboard (Next.js + Supabase)
+- `dashboard/mcp-server/` - MCP server for dashboard tools
+- `.claude/` - Claude agent configurations
+- `docs/` - Project documentation
+
+---
+
+## Before Every Response
+
+Ask yourself:
+1. ✅ Did I update the dashboard for any task changes?
+2. ✅ Did I log relevant activities?
+3. ✅ Is the phase progress accurate?
+4. ✅ Am I following compliance rules?
+

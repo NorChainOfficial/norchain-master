@@ -19,6 +19,7 @@ import {
   ArrowRight,
   CornerDownLeft,
   Hash,
+  Settings2,
 } from 'lucide-react'
 
 // Import data
@@ -42,6 +43,7 @@ const pages: SearchResult[] = [
   { id: 'repos', title: 'Repositories', subtitle: 'GitHub repositories', category: 'page', href: '/repos', icon: GitBranch },
   { id: 'tasks', title: 'Tasks', subtitle: 'Task board', category: 'page', href: '/tasks', icon: ListTodo },
   { id: 'compliance', title: 'Compliance', subtitle: 'Regulatory tracking', category: 'page', href: '/compliance', icon: Shield },
+  { id: 'manage', title: 'Manage', subtitle: 'Add, edit, delete content', category: 'page', href: '/manage', icon: Settings2 },
 ]
 
 interface SearchCommandProps {

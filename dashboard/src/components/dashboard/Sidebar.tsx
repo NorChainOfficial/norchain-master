@@ -11,6 +11,7 @@ import {
   Activity,
   ExternalLink,
   Zap,
+  Settings2,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -41,6 +42,11 @@ const navigation = [
     name: 'Compliance',
     href: '/compliance',
     icon: Shield,
+  },
+  {
+    name: 'Manage',
+    href: '/manage',
+    icon: Settings2,
   },
 ]
 
