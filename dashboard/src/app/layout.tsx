@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { Providers } from '@/components/providers'
 import { Sidebar } from '@/components/dashboard/Sidebar'
-
-const inter = Inter({ subsets: ['latin'] })
+import { Header } from '@/components/dashboard/Header'
 
 export const metadata: Metadata = {
   title: 'NorChain PM Dashboard',
@@ -17,18 +17,22 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+    <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
+      <body className="font-sans antialiased">
         <Providers>
-          <div className="flex h-screen overflow-hidden">
+          <div className="flex h-screen overflow-hidden bg-background">
             <Sidebar />
-            <main className="flex-1 overflow-auto bg-background">
-              {children}
-            </main>
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <Header />
+              <main className="flex-1 overflow-auto gradient-bg noise relative">
+                <div className="relative z-10">
+                  {children}
+                </div>
+              </main>
+            </div>
           </div>
         </Providers>
       </body>
     </html>
   )
 }
-

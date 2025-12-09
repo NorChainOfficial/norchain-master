@@ -8,6 +8,17 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontSize: {
+      'xs': ['0.8125rem', { lineHeight: '1.25rem' }],      // 13px
+      'sm': ['0.9375rem', { lineHeight: '1.5rem' }],       // 15px
+      'base': ['1rem', { lineHeight: '1.625rem' }],        // 16px
+      'lg': ['1.125rem', { lineHeight: '1.75rem' }],       // 18px
+      'xl': ['1.25rem', { lineHeight: '1.875rem' }],       // 20px
+      '2xl': ['1.5rem', { lineHeight: '2rem' }],           // 24px
+      '3xl': ['1.75rem', { lineHeight: '2.25rem' }],       // 28px
+      '4xl': ['2.125rem', { lineHeight: '2.625rem' }],     // 34px
+      '5xl': ['2.75rem', { lineHeight: '3.25rem' }],       // 44px
+    },
     extend: {
       colors: {
         border: 'hsl(var(--border))',

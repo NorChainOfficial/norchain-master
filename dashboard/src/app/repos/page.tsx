@@ -11,7 +11,7 @@ export default function ReposPage() {
   const repos = reposData as Repository[]
   const publicRepos = repos.filter((r) => r.visibility === 'public')
   const privateRepos = repos.filter((r) => r.visibility === 'private')
-  const categories = [...new Set(repos.map((r) => r.category))]
+  const categories = Array.from(new Set(repos.map((r) => r.category)))
 
   return (
     <div className="p-6 space-y-6">

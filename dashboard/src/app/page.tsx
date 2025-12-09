@@ -7,19 +7,12 @@ import { TaskList } from '@/components/dashboard/TaskBoard'
 import { ComplianceStatus } from '@/components/dashboard/CompliancePanel'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 export default function Dashboard() {
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">NorChain PM Dashboard</h1>
-        <p className="text-muted-foreground">
-          Real-time visibility into the NorChain ecosystem development
-        </p>
-      </div>
-
       {/* Stats Overview */}
       <StatsCards />
 
@@ -39,9 +32,18 @@ export default function Dashboard() {
       {/* Secondary Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Repositories */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Repositories</CardTitle>
+        <Card variant="glass" className="group">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Repositories</CardTitle>
+              <Link 
+                href="/repos" 
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                View all
+                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             <RepoList />
@@ -49,9 +51,18 @@ export default function Dashboard() {
         </Card>
 
         {/* Tasks Preview */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Active Tasks</CardTitle>
+        <Card variant="glass" className="group">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Active Tasks</CardTitle>
+              <Link 
+                href="/tasks" 
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                View all
+                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             <TaskList />
@@ -59,9 +70,18 @@ export default function Dashboard() {
         </Card>
 
         {/* Compliance Status */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Compliance</CardTitle>
+        <Card variant="glass" className="group">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Compliance</CardTitle>
+              <Link 
+                href="/compliance" 
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+              >
+                View all
+                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
           </CardHeader>
           <CardContent>
             <ComplianceStatus />
@@ -71,4 +91,3 @@ export default function Dashboard() {
     </div>
   )
 }
-

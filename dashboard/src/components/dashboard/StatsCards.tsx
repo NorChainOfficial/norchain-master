@@ -4,15 +4,15 @@ import { usePhases } from '@/hooks/usePhases'
 import { useTasks } from '@/hooks/useTasks'
 import { useCompliance } from '@/hooks/useCompliance'
 import reposData from '@/data/repos.json'
-import { Card, CardContent } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
+import { cn } from '@/lib/utils'
 import {
   Layers,
   ListTodo,
   GitBranch,
   Shield,
   TrendingUp,
-  Clock,
+  ArrowUpRight,
+  ArrowDownRight,
 } from 'lucide-react'
 import type { Repository } from '@/types'
 
@@ -25,91 +25,133 @@ export function StatsCards() {
   const stats = [
     {
       label: 'Current Phase',
-      value: `${currentPhase.id}/${totalPhases}`,
-      subtext: currentPhase.name,
+      value: currentPhase.name,
+      subtext: `Phase ${currentPhase.id} of ${totalPhases}`,
       icon: Layers,
-      color: 'text-norchain-400',
-      bgColor: 'bg-norchain-500/10',
-      progress: (currentPhase.id / totalPhases) * 100,
+      color: 'from-indigo-500 to-purple-500',
+      bgColor: 'bg-indigo-500/10',
+      textColor: 'text-indigo-500',
+      trend: null,
+    },
+    {
+      label: 'Overall Progress',
+      value: `${overallProgress}%`,
+      subtext: 'Across all phases',
+      icon: TrendingUp,
+      color: 'from-emerald-500 to-teal-500',
+      bgColor: 'bg-emerald-500/10',
+      textColor: 'text-emerald-500',
+      trend: { value: 5, positive: true },
     },
     {
       label: 'Tasks Complete',
       value: `${taskStats.done}/${taskStats.total}`,
-      subtext: `${taskStats.completionRate}% done`,
+      subtext: `${taskStats.completionRate}% completion rate`,
       icon: ListTodo,
-      color: 'text-blue-400',
+      color: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-500/10',
-      progress: taskStats.completionRate,
+      textColor: 'text-blue-500',
+      trend: { value: 12, positive: true },
     },
     {
       label: 'Repositories',
       value: repos.length.toString(),
       subtext: `${repos.filter((r) => r.visibility === 'public').length} public`,
       icon: GitBranch,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-500/10',
+      color: 'from-violet-500 to-purple-500',
+      bgColor: 'bg-violet-500/10',
+      textColor: 'text-violet-500',
+      trend: null,
     },
     {
       label: 'Compliance',
       value: `${complianceStats.completionRate}%`,
       subtext: `${complianceStats.pending} items pending`,
       icon: Shield,
-      color: 'text-success',
-      bgColor: 'bg-success/10',
-      progress: complianceStats.completionRate,
+      color: 'from-amber-500 to-orange-500',
+      bgColor: 'bg-amber-500/10',
+      textColor: 'text-amber-500',
+      trend: { value: 8, positive: true },
     },
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat) => (
-        <StatCard key={stat.label} {...stat} />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      {stats.map((stat, index) => (
+        <StatCard key={stat.label} stat={stat} index={index} />
       ))}
     </div>
   )
 }
 
 interface StatCardProps {
-  label: string
-  value: string
-  subtext: string
-  icon: React.ElementType
-  color: string
-  bgColor: string
-  progress?: number
+  stat: {
+    label: string
+    value: string
+    subtext: string
+    icon: React.ElementType
+    color: string
+    bgColor: string
+    textColor: string
+    trend: { value: number; positive: boolean } | null
+  }
+  index: number
 }
 
-function StatCard({
-  label,
-  value,
-  subtext,
-  icon: Icon,
-  color,
-  bgColor,
-  progress,
-}: StatCardProps) {
+function StatCard({ stat, index }: StatCardProps) {
+  const Icon = stat.icon
+
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="text-2xl font-bold mt-1">{value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
+    <div
+      className={cn(
+        'group relative overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-300',
+        'hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20',
+        'hover:-translate-y-1 hover:border-primary/20',
+        'animate-slide-up opacity-0'
+      )}
+      style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'forwards' }}
+    >
+      {/* Background gradient */}
+      <div className={cn(
+        'absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300',
+        'bg-gradient-to-br',
+        stat.color
+      )} style={{ opacity: 0.03 }} />
+
+      {/* Content */}
+      <div className="relative">
+        <div className="flex items-start justify-between mb-3">
+          <div className={cn('rounded-xl p-3 shrink-0', stat.bgColor)}>
+            <Icon className={cn('h-6 w-6', stat.textColor)} />
           </div>
-          <div className={`${bgColor} rounded-lg p-2`}>
-            <Icon className={`h-5 w-5 ${color}`} />
-          </div>
+          {stat.trend && (
+            <div className={cn(
+              'flex items-center gap-0.5 text-xs font-medium',
+              stat.trend.positive ? 'text-emerald-500' : 'text-red-500'
+            )}>
+              {stat.trend.positive ? (
+                <ArrowUpRight className="h-3 w-3" />
+              ) : (
+                <ArrowDownRight className="h-3 w-3" />
+              )}
+              {stat.trend.value}%
+            </div>
+          )}
         </div>
-        {progress !== undefined && (
-          <Progress
-            value={progress}
-            className="mt-4 h-1.5"
-            indicatorClassName={bgColor.replace('/10', '')}
-          />
-        )}
-      </CardContent>
-    </Card>
+
+        <div className="space-y-1">
+          <p className="text-2xl font-bold tracking-tight tabular-nums leading-none">
+            {stat.value}
+          </p>
+          <p className="text-sm font-medium text-muted-foreground leading-tight">
+            {stat.label}
+          </p>
+          <p className="text-xs text-muted-foreground/70 leading-tight">
+            {stat.subtext}
+          </p>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -121,21 +163,20 @@ export function MiniStats() {
   return (
     <div className="flex items-center gap-6 text-sm">
       <div className="flex items-center gap-2">
-        <Layers className="h-4 w-4 text-norchain-400" />
+        <Layers className="h-4 w-4 text-primary" />
         <span className="text-muted-foreground">Phase</span>
-        <span className="font-medium">{currentPhase.id}</span>
+        <span className="font-semibold tabular-nums">{currentPhase.id}</span>
       </div>
       <div className="flex items-center gap-2">
-        <TrendingUp className="h-4 w-4 text-success" />
+        <TrendingUp className="h-4 w-4 text-emerald-500" />
         <span className="text-muted-foreground">Progress</span>
-        <span className="font-medium">{overallProgress}%</span>
+        <span className="font-semibold tabular-nums">{overallProgress}%</span>
       </div>
       <div className="flex items-center gap-2">
-        <Clock className="h-4 w-4 text-blue-400" />
+        <ListTodo className="h-4 w-4 text-blue-500" />
         <span className="text-muted-foreground">Active</span>
-        <span className="font-medium">{taskStats.inProgress}</span>
+        <span className="font-semibold tabular-nums">{taskStats.inProgress}</span>
       </div>
     </div>
   )
 }
-

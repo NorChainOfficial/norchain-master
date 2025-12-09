@@ -1,5 +1,4 @@
 {
-  "strategy": "Private First — Regulated Later",
   "tokens": [
     {
       "symbol": "NOR",
@@ -27,19 +26,97 @@
     }
   ],
   "checklist": [
-    { "id": "c1", "category": "Legal", "item": "Accredited/KYC investors only", "status": "complete", "required": true },
-    { "id": "c2", "category": "Legal", "item": "Invitation-only distribution", "status": "complete", "required": true },
-    { "id": "c3", "category": "Legal", "item": "No public marketing", "status": "complete", "required": true },
-    { "id": "c4", "category": "Legal", "item": "No exchange listing", "status": "complete", "required": true },
-    { "id": "c5", "category": "Legal", "item": "Legal disclaimers", "status": "in_progress", "required": true },
-    { "id": "c6", "category": "Technical", "item": "Transfer restrictions implemented", "status": "pending", "required": true },
-    { "id": "c7", "category": "Technical", "item": "KYC-gating on transfers", "status": "pending", "required": true },
-    { "id": "c8", "category": "Technical", "item": "Whitelist-only transfers", "status": "pending", "required": true },
-    { "id": "c9", "category": "Technical", "item": "Pause mechanism", "status": "pending", "required": true },
-    { "id": "c10", "category": "Documentation", "item": "NOR utility token opinion", "status": "in_progress", "required": true },
-    { "id": "c11", "category": "Documentation", "item": "PM-EQ security token memo", "status": "in_progress", "required": true },
-    { "id": "c12", "category": "Documentation", "item": "Regulatory analysis", "status": "pending", "required": true },
-    { "id": "c13", "category": "Documentation", "item": "Risk disclosures", "status": "pending", "required": true }
-  ]
+    {
+      "id": "c1",
+      "category": "Legal",
+      "item": "Accredited/KYC investors only",
+      "status": "complete",
+      "required": true
+    },
+    {
+      "id": "c2",
+      "category": "Legal",
+      "item": "Invitation-only distribution",
+      "status": "complete",
+      "required": true
+    },
+    {
+      "id": "c3",
+      "category": "Legal",
+      "item": "No public marketing",
+      "status": "complete",
+      "required": true
+    },
+    {
+      "id": "c4",
+      "category": "Legal",
+      "item": "No exchange listing",
+      "status": "complete",
+      "required": true
+    },
+    {
+      "id": "c5",
+      "category": "Legal",
+      "item": "Legal disclaimers",
+      "status": "in_progress",
+      "required": true
+    },
+    {
+      "id": "c6",
+      "category": "Technical",
+      "item": "Transfer restrictions implemented",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "id": "c7",
+      "category": "Technical",
+      "item": "KYC-gating on transfers",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "id": "c8",
+      "category": "Technical",
+      "item": "Whitelist-only transfers",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "id": "c9",
+      "category": "Technical",
+      "item": "Pause mechanism",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "id": "c10",
+      "category": "Documentation",
+      "item": "NOR utility token opinion",
+      "status": "in_progress",
+      "required": true
+    },
+    {
+      "id": "c11",
+      "category": "Documentation",
+      "item": "PM-EQ security token memo",
+      "status": "in_progress",
+      "required": true
+    },
+    {
+      "id": "c12",
+      "category": "Documentation",
+      "item": "Regulatory analysis",
+      "status": "pending",
+      "required": true
+    },
+    {
+      "id": "c13",
+      "category": "Documentation",
+      "item": "Risk disclosures",
+      "status": "pending",
+      "required": true
+    }
+  ],
+  "strategy": "Private First — Regulated Later"
 }
-

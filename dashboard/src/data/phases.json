@@ -7,12 +7,36 @@
     "status": "active",
     "progress": 15,
     "deliverables": [
-      { "name": "NorChain L1 (PoSA)", "status": "in_progress", "description": "Finalize consensus mechanism" },
-      { "name": "Validators", "status": "pending", "description": "Minimum 5-7 validators running" },
-      { "name": "P2P Health Checks", "status": "pending", "description": "Network stability monitoring" },
-      { "name": "RPC Gateway", "status": "pending", "description": "Nginx + SSL secured endpoints" },
-      { "name": "Genesis File", "status": "complete", "description": "Finalized genesis configuration" },
-      { "name": "Monitoring", "status": "pending", "description": "Prometheus + Grafana alerting" }
+      {
+        "name": "NorChain L1 (PoSA)",
+        "status": "in_progress",
+        "description": "Finalize consensus mechanism"
+      },
+      {
+        "name": "Validators",
+        "status": "pending",
+        "description": "Minimum 5-7 validators running"
+      },
+      {
+        "name": "P2P Health Checks",
+        "status": "pending",
+        "description": "Network stability monitoring"
+      },
+      {
+        "name": "RPC Gateway",
+        "status": "pending",
+        "description": "Nginx + SSL secured endpoints"
+      },
+      {
+        "name": "Genesis File",
+        "status": "complete",
+        "description": "Finalized genesis configuration"
+      },
+      {
+        "name": "Monitoring",
+        "status": "pending",
+        "description": "Prometheus + Grafana alerting"
+      }
     ]
   },
   {
@@ -23,11 +47,31 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "Block Explorer UI", "status": "pending", "description": "NorExplorer frontend" },
-      { "name": "Transaction History", "status": "pending", "description": "Full TX search and display" },
-      { "name": "Address Pages", "status": "pending", "description": "Balance, history, tokens" },
-      { "name": "Token Pages", "status": "pending", "description": "PM-EQ, NOR token info" },
-      { "name": "API Endpoints", "status": "pending", "description": "Public and private APIs" }
+      {
+        "name": "Block Explorer UI",
+        "status": "pending",
+        "description": "NorExplorer frontend"
+      },
+      {
+        "name": "Transaction History",
+        "status": "pending",
+        "description": "Full TX search and display"
+      },
+      {
+        "name": "Address Pages",
+        "status": "pending",
+        "description": "Balance, history, tokens"
+      },
+      {
+        "name": "Token Pages",
+        "status": "pending",
+        "description": "PM-EQ, NOR token info"
+      },
+      {
+        "name": "API Endpoints",
+        "status": "pending",
+        "description": "Public and private APIs"
+      }
     ]
   },
   {
@@ -38,11 +82,31 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "PM-EQ Token", "status": "pending", "description": "Private ERC20 with restrictions" },
-      { "name": "Transfer Restrictions", "status": "pending", "description": "Whitelist-based transfers" },
-      { "name": "Investor Registry", "status": "pending", "description": "KYC-verified investor list" },
-      { "name": "Certificate Registry", "status": "pending", "description": "PDF hash on-chain storage" },
-      { "name": "SmartPay Escrow", "status": "pending", "description": "Escrow contract for purchases" }
+      {
+        "name": "PM-EQ Token",
+        "status": "pending",
+        "description": "Private ERC20 with restrictions"
+      },
+      {
+        "name": "Transfer Restrictions",
+        "status": "pending",
+        "description": "Whitelist-based transfers"
+      },
+      {
+        "name": "Investor Registry",
+        "status": "pending",
+        "description": "KYC-verified investor list"
+      },
+      {
+        "name": "Certificate Registry",
+        "status": "pending",
+        "description": "PDF hash on-chain storage"
+      },
+      {
+        "name": "SmartPay Escrow",
+        "status": "pending",
+        "description": "Escrow contract for purchases"
+      }
     ]
   },
   {
@@ -53,10 +117,26 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "Web Wallet", "status": "pending", "description": "NorChain Web Wallet" },
-      { "name": "iOS Wallet", "status": "pending", "description": "Native SwiftUI application" },
-      { "name": "Android Wallet", "status": "pending", "description": "Native Jetpack Compose application" },
-      { "name": "Biometric Login", "status": "pending", "description": "FaceID / Touch ID / Fingerprint" }
+      {
+        "name": "Web Wallet",
+        "status": "pending",
+        "description": "NorChain Web Wallet"
+      },
+      {
+        "name": "iOS Wallet",
+        "status": "pending",
+        "description": "Native SwiftUI application"
+      },
+      {
+        "name": "Android Wallet",
+        "status": "pending",
+        "description": "Native Jetpack Compose application"
+      },
+      {
+        "name": "Biometric Login",
+        "status": "pending",
+        "description": "FaceID / Touch ID / Fingerprint"
+      }
     ]
   },
   {
@@ -67,10 +147,26 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "SmartPay UI", "status": "pending", "description": "Payment interface" },
-      { "name": "Escrow Builder", "status": "pending", "description": "Transaction construction" },
-      { "name": "Settlement Module", "status": "pending", "description": "Payment settlement" },
-      { "name": "FIAT On-ramp", "status": "pending", "description": "Ramp/MoonPay/Vipps integration" }
+      {
+        "name": "SmartPay UI",
+        "status": "pending",
+        "description": "Payment interface"
+      },
+      {
+        "name": "Escrow Builder",
+        "status": "pending",
+        "description": "Transaction construction"
+      },
+      {
+        "name": "Settlement Module",
+        "status": "pending",
+        "description": "Payment settlement"
+      },
+      {
+        "name": "FIAT On-ramp",
+        "status": "pending",
+        "description": "Ramp/MoonPay/Vipps integration"
+      }
     ]
   },
   {
@@ -81,10 +177,26 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "PureMinerals Portal", "status": "pending", "description": "Investor verification flow" },
-      { "name": "NorVége Portal", "status": "pending", "description": "Based on PureMinerals template" },
-      { "name": "P2P Marketplace", "status": "pending", "description": "Secondary trading" },
-      { "name": "Company Template", "status": "pending", "description": "Base template for new RWA companies" }
+      {
+        "name": "PureMinerals Portal",
+        "status": "pending",
+        "description": "Investor verification flow"
+      },
+      {
+        "name": "NorVége Portal",
+        "status": "pending",
+        "description": "Based on PureMinerals template"
+      },
+      {
+        "name": "P2P Marketplace",
+        "status": "pending",
+        "description": "Secondary trading"
+      },
+      {
+        "name": "Company Template",
+        "status": "pending",
+        "description": "Base template for new RWA companies"
+      }
     ]
   },
   {
@@ -95,10 +207,26 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "Admin Panel", "status": "pending", "description": "NorChain Admin interface" },
-      { "name": "Company Onboarding", "status": "pending", "description": "RWA company registration" },
-      { "name": "KYC Approval", "status": "pending", "description": "Manual verification panel" },
-      { "name": "Compliance Reporting", "status": "pending", "description": "Regulatory report generation" }
+      {
+        "name": "Admin Panel",
+        "status": "pending",
+        "description": "NorChain Admin interface"
+      },
+      {
+        "name": "Company Onboarding",
+        "status": "pending",
+        "description": "RWA company registration"
+      },
+      {
+        "name": "KYC Approval",
+        "status": "pending",
+        "description": "Manual verification panel"
+      },
+      {
+        "name": "Compliance Reporting",
+        "status": "pending",
+        "description": "Regulatory report generation"
+      }
     ]
   },
   {
@@ -109,9 +237,21 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "Market Data API", "status": "pending", "description": "Price feeds from Coinbase" },
-      { "name": "Coinbase Commerce", "status": "pending", "description": "NOR/USDC payment acceptance" },
-      { "name": "Wallet Integration", "status": "pending", "description": "Coinbase Wallet connection" }
+      {
+        "name": "Market Data API",
+        "status": "pending",
+        "description": "Price feeds from Coinbase"
+      },
+      {
+        "name": "Coinbase Commerce",
+        "status": "pending",
+        "description": "NOR/USDC payment acceptance"
+      },
+      {
+        "name": "Wallet Integration",
+        "status": "pending",
+        "description": "Coinbase Wallet connection"
+      }
     ]
   },
   {
@@ -122,10 +262,26 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "norchain.org", "status": "pending", "description": "Main NorChain website" },
-      { "name": "Developer Docs", "status": "pending", "description": "API and integration guides" },
-      { "name": "PureMinerals Landing", "status": "pending", "description": "Investment marketing site" },
-      { "name": "SmartPay Landing", "status": "pending", "description": "Payment solution marketing" }
+      {
+        "name": "norchain.org",
+        "status": "pending",
+        "description": "Main NorChain website"
+      },
+      {
+        "name": "Developer Docs",
+        "status": "pending",
+        "description": "API and integration guides"
+      },
+      {
+        "name": "PureMinerals Landing",
+        "status": "pending",
+        "description": "Investment marketing site"
+      },
+      {
+        "name": "SmartPay Landing",
+        "status": "pending",
+        "description": "Payment solution marketing"
+      }
     ]
   },
   {
@@ -136,11 +292,26 @@
     "status": "pending",
     "progress": 0,
     "deliverables": [
-      { "name": "TX Monitoring", "status": "pending", "description": "Transaction surveillance" },
-      { "name": "KYC/AML Tools", "status": "pending", "description": "Admin verification tools" },
-      { "name": "Risk Scoring", "status": "pending", "description": "Automated risk assessment" },
-      { "name": "MiCA Architecture", "status": "pending", "description": "EU regulation alignment" }
+      {
+        "name": "TX Monitoring",
+        "status": "pending",
+        "description": "Transaction surveillance"
+      },
+      {
+        "name": "KYC/AML Tools",
+        "status": "pending",
+        "description": "Admin verification tools"
+      },
+      {
+        "name": "Risk Scoring",
+        "status": "pending",
+        "description": "Automated risk assessment"
+      },
+      {
+        "name": "MiCA Architecture",
+        "status": "pending",
+        "description": "EU regulation alignment"
+      }
     ]
   }
 ]
-

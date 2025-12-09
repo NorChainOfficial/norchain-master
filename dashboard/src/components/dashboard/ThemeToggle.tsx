@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useTheme } from 'next-themes'
-import { Moon, Sun, Monitor } from 'lucide-react'
+import { Moon, Sun, Monitor, Check } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,42 +13,72 @@ import { cn } from '@/lib/utils'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="flex h-9 w-9 items-center justify-center rounded-lg border bg-muted/50">
+        <div className="h-4 w-4 animate-pulse rounded bg-muted-foreground/20" />
+      </div>
+    )
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-lg border bg-background hover:bg-muted transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-lg border bg-muted/50 hover:bg-muted transition-all duration-200 focus-ring"
           aria-label="Toggle theme"
         >
           <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-36">
         <DropdownMenuItem
           onClick={() => setTheme('light')}
-          className={cn(theme === 'light' && 'bg-muted')}
+          className={cn(
+            'flex items-center justify-between cursor-pointer',
+            theme === 'light' && 'bg-muted'
+          )}
         >
-          <Sun className="mr-2 h-4 w-4" />
-          Light
+          <div className="flex items-center gap-2">
+            <Sun className="h-4 w-4" />
+            Light
+          </div>
+          {theme === 'light' && <Check className="h-4 w-4 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme('dark')}
-          className={cn(theme === 'dark' && 'bg-muted')}
+          className={cn(
+            'flex items-center justify-between cursor-pointer',
+            theme === 'dark' && 'bg-muted'
+          )}
         >
-          <Moon className="mr-2 h-4 w-4" />
-          Dark
+          <div className="flex items-center gap-2">
+            <Moon className="h-4 w-4" />
+            Dark
+          </div>
+          {theme === 'dark' && <Check className="h-4 w-4 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme('system')}
-          className={cn(theme === 'system' && 'bg-muted')}
+          className={cn(
+            'flex items-center justify-between cursor-pointer',
+            theme === 'system' && 'bg-muted'
+          )}
         >
-          <Monitor className="mr-2 h-4 w-4" />
-          System
+          <div className="flex items-center gap-2">
+            <Monitor className="h-4 w-4" />
+            System
+          </div>
+          {theme === 'system' && <Check className="h-4 w-4 text-primary" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
-
