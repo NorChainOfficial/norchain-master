@@ -81,6 +81,113 @@ log_activity        - Log activity event
 
 ---
 
+## Full PM Ecosystem
+
+This repository has the complete NorChain PM infrastructure with 16 specialized agents.
+
+### Agents Available (16 total)
+
+#### Core Development Agents
+| Agent | Domain | Use Case |
+|-------|--------|----------|
+| `norchain-pm-agent` | Master PM | Strategic planning, orchestration |
+| `norchain-dashboard-sync-agent` | Dashboard | Auto task/phase tracking |
+| `norchain-blockchain-agent` | Blockchain | Go, PoSA, consensus |
+| `norchain-contract-agent` | Contracts | Solidity, Hardhat |
+| `norchain-backend-agent` | Backend | NestJS, PostgreSQL |
+| `norchain-frontend-agent` | Frontend | Next.js, React |
+| `norchain-mobile-agent` | Mobile | Swift, Kotlin |
+
+#### Testing & QA Agents
+| Agent | Domain | Use Case |
+|-------|--------|----------|
+| `norchain-testing-agent` | Testing | Unit tests, coverage, TDD |
+| `norchain-e2e-agent` | E2E | Playwright, Cypress, UI tests |
+| `norchain-integration-agent` | Integration | API tests, service tests |
+
+#### Security & Compliance Agents
+| Agent | Domain | Use Case |
+|-------|--------|----------|
+| `norchain-security-agent` | Security | Audits, vulnerability scanning |
+| `norchain-cybersecurity-agent` | Cybersecurity | Threat modeling, pen testing |
+| `norchain-soc2-agent` | SOC2 | Compliance, audit prep |
+
+#### Operations Agents
+| Agent | Domain | Use Case |
+|-------|--------|----------|
+| `norchain-devops-agent` | DevOps | CI/CD, Docker, K8s |
+| `norchain-docs-agent` | Documentation | API docs, tech writing |
+| `norchain-performance-agent` | Performance | Load testing, optimization |
+
+### Commands Available (40+)
+
+#### PM Commands
+- `/pm-plan <feature>` - Generate implementation plan
+- `/pm-review <pr>` - Review PR
+- `/pm-prioritize` - Prioritize backlog
+- `/pm-sprint` - Plan sprint
+- `/pm-status` - Status dashboard
+- `/pm-risk` - Risk assessment
+- `/pm-delegate <task>` - Delegate task
+
+#### Domain Commands
+- `/norchain-status` - Ecosystem overview
+- `/norchain-phase <n>` - Phase context
+- `/norchain-task <id>` - Task details
+- `/norchain-compliance` - Compliance check
+- `/norchain-repo <name>` - Repo info
+
+#### Dashboard Commands
+- `/db-stats` - Dashboard statistics
+- `/db-tasks` - List tasks
+- `/db-start-task <id>` - Start task
+- `/db-complete-task <id>` - Complete task
+- `/db-phases` - View phases
+- `/db-compliance` - View compliance
+
+#### Testing Commands
+- `/test-strategy <feature>` - Design test strategy
+- `/test-coverage` - Analyze coverage
+- `/test-review <file>` - Review tests
+- `/e2e-plan <flow>` - Design E2E tests
+- `/e2e-review` - Review E2E coverage
+- `/e2e-debug <test>` - Debug flaky test
+- `/integration-test <service>` - Design integration tests
+
+#### Security Commands
+- `/security-scan` - Run security analysis
+- `/security-review <file>` - Review file security
+- `/vulnerability-report` - Generate vuln report
+- `/threat-model <system>` - Create threat model
+- `/soc2-status` - Check SOC2 compliance
+- `/soc2-evidence <control>` - Collect evidence
+
+#### Operations Commands
+- `/deploy-plan <env>` - Plan deployment
+- `/docs-generate <type>` - Generate docs
+- `/docs-review` - Review documentation
+- `/perf-test <scenario>` - Run performance test
+- `/perf-analyze` - Analyze bottlenecks
+
+### Skills Loaded
+- `norchain-development` - Core development patterns
+- `product-management` - Agile, RICE, compliance
+- `security-token` - PM-EQ/NV-EQ token handling
+- `wallet-development` - Wallet integration
+- `compliance-development` - MiCA compliance
+- `smartpay-integration` - Payment flows
+
+### Automatic Dashboard Sync
+The `norchain-dashboard-sync-agent` automatically:
+- Syncs dashboard state at session start
+- Updates task status when you start/complete work
+- Logs all activities
+- Updates phase progress
+
+**You don't need to manually call MCP tools** - the agent handles it.
+
+---
+
 ## Compliance Rules
 
 **Critical compliance requirements (inherited from Master):**
@@ -107,7 +214,23 @@ log_activity        - Log activity event
 
 The dashboard MCP server must be configured in your Claude Code settings.
 
-**Required**: Clone the Master repository alongside this repo:
+**Option 1: NPM Package (Recommended)**
+```json
+{
+  "mcpServers": {
+    "norchain-dashboard": {
+      "command": "npx",
+      "args": ["@norchain/dashboard-mcp"],
+      "env": {
+        "SUPABASE_URL": "${env:SUPABASE_URL}",
+        "SUPABASE_SERVICE_ROLE_KEY": "${env:SUPABASE_SERVICE_ROLE_KEY}"
+      }
+    }
+  }
+}
+```
+
+**Option 2: Relative Path (Requires Master repo)**
 ```
 /your/dev/path/
 ├── Master/                    # Master repo with MCP server

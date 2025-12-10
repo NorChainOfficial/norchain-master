@@ -159,8 +159,45 @@ jobs:
                 ../master/templates/docs/CLAUDE-child.md > CLAUDE.md
           fi
 
-          # Copy .claude settings for MCP server access
+          # Copy entire .claude/ directory for full PM ecosystem
           mkdir -p .claude
+
+          # Sync agents
+          if [ -d "../master/.claude/agents" ]; then
+            mkdir -p .claude/agents
+            cp -r ../master/.claude/agents/* .claude/agents/ 2>/dev/null || true
+          fi
+
+          # Sync skills
+          if [ -d "../master/.claude/skills" ]; then
+            mkdir -p .claude/skills
+            cp -r ../master/.claude/skills/* .claude/skills/ 2>/dev/null || true
+          fi
+
+          # Sync commands
+          if [ -d "../master/.claude/commands" ]; then
+            mkdir -p .claude/commands
+            cp -r ../master/.claude/commands/* .claude/commands/ 2>/dev/null || true
+          fi
+
+          # Sync hooks
+          if [ -d "../master/.claude/hooks" ]; then
+            mkdir -p .claude/hooks
+            cp -r ../master/.claude/hooks/* .claude/hooks/ 2>/dev/null || true
+          fi
+
+          # Sync MCP configs
+          if [ -d "../master/.claude/mcp" ]; then
+            mkdir -p .claude/mcp
+            cp -r ../master/.claude/mcp/* .claude/mcp/ 2>/dev/null || true
+          fi
+
+          # Copy .claude README
+          if [ -f "../master/.claude/README.md" ]; then
+            cp ../master/.claude/README.md .claude/ 2>/dev/null || true
+          fi
+
+          # Sync settings.local.json (generated for child repos)
           if [ -f "../master/templates/claude/settings-child.json" ]; then
             cp ../master/templates/claude/settings-child.json .claude/settings.local.json
           fi
@@ -640,6 +677,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### What Was Created" >> $GITHUB_STEP_SUMMARY
           echo "- CLAUDE.md (with dashboard sync protocol)" >> $GITHUB_STEP_SUMMARY
+          echo "- Full .claude/ ecosystem:" >> $GITHUB_STEP_SUMMARY
+          echo "  - 16 agents (pm, blockchain, contract, backend, frontend, mobile, dashboard-sync, testing, e2e, integration, security, cybersecurity, soc2, devops, docs, performance)" >> $GITHUB_STEP_SUMMARY
+          echo "  - 40+ commands (pm-*, norchain-*, db-*, test-*, e2e-*, security-*, soc2-*, deploy-*, docs-*, perf-*)" >> $GITHUB_STEP_SUMMARY
+          echo "  - Skills, hooks, MCP configs" >> $GITHUB_STEP_SUMMARY
           echo "- .claude/settings.local.json (MCP server config)" >> $GITHUB_STEP_SUMMARY
           echo "- README.md" >> $GITHUB_STEP_SUMMARY
           echo "- CONTRIBUTING.md" >> $GITHUB_STEP_SUMMARY
