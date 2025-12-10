@@ -15,6 +15,9 @@ import {
   Sparkles,
   TestTube,
   Server,
+  FolderKanban,
+  Users,
+  MessageSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -26,6 +29,11 @@ const navigation = [
     name: 'Dashboard',
     href: '/',
     icon: LayoutDashboard,
+  },
+  {
+    name: 'Project',
+    href: '/project',
+    icon: FolderKanban,
   },
   {
     name: 'Tasks',
@@ -50,6 +58,11 @@ const navigation = [
 ]
 
 const advancedNavigation = [
+  {
+    name: 'Team',
+    href: '/team',
+    icon: Users,
+  },
   {
     name: 'AI Assistant',
     href: '/ai',
@@ -97,27 +110,27 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full w-72 flex-col border-r bg-card/50 backdrop-blur-xl">
-      {/* Logo - Using brand image */}
-      <div className="flex h-16 items-center gap-3 border-b px-4">
+      {/* Logo - Using brand image, matched to header height */}
+      <div className="flex h-20 items-center gap-4 border-b px-5">
         <div className="relative shrink-0">
           <img 
             src="/logo.png" 
             alt="NorChain" 
-            className="h-10 w-10 object-contain drop-shadow-lg"
+            className="h-14 w-14 object-contain drop-shadow-lg"
             onError={(e) => {
               // Fallback to text if image not found
               e.currentTarget.style.display = 'none'
               e.currentTarget.nextElementSibling?.classList.remove('hidden')
             }}
           />
-          <div className="hidden h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25">
-            <span className="text-lg font-bold text-white font-display">N</span>
+          <div className="hidden h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25">
+            <span className="text-2xl font-bold text-white font-display">N</span>
           </div>
-          <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-card bg-emerald-500" />
+          <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-emerald-500" />
         </div>
         <div className="flex flex-col justify-center min-w-0">
-          <span className="text-base font-bold tracking-tight leading-tight font-display">NorChain</span>
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-widest leading-tight">PM Dashboard</span>
+          <span className="text-lg font-bold tracking-tight leading-tight font-display">NorChain</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-widest leading-tight">PM Dashboard</span>
         </div>
       </div>
 

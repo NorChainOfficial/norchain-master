@@ -6,15 +6,15 @@ import { SearchCommand, useSearchCommand } from './SearchCommand'
 import { Badge } from '@/components/ui/badge'
 import { usePhases } from '@/hooks/usePhases'
 import { useTasks } from '@/hooks/useTasks'
-import { OrgSwitcher } from '@/components/layout/OrgSwitcher'
 import { ProjectSwitcher } from '@/components/layout/ProjectSwitcher'
+import { NotificationCenter } from '@/components/notifications/NotificationCenter'
 import {
   Layers,
   TrendingUp,
   Clock,
-  Bell,
   Search,
   Command,
+  MessageSquare,
 } from 'lucide-react'
 
 const pageTitles: Record<string, { title: string; description: string }> = {
@@ -61,24 +61,17 @@ export function Header() {
             </button>
           </div>
 
-          {/* Right - Org/Project Switchers & Actions */}
+          {/* Right - Project Switcher & Actions */}
           <div className="flex items-center gap-4 shrink-0">
-            {/* Organization & Project Switchers */}
-            <div className="hidden lg:flex items-center gap-3">
-              <OrgSwitcher />
-              <div className="h-8 w-px bg-border" />
+            {/* Project Switcher - Prominent */}
+            <div className="hidden md:block">
               <ProjectSwitcher />
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {/* Notifications */}
-              <button className="relative flex h-11 w-11 items-center justify-center rounded-xl border bg-muted/50 hover:bg-muted transition-all duration-200">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-lg shadow-primary/20">
-                  3
-                </span>
-              </button>
+              <NotificationCenter />
 
               {/* Theme Toggle */}
               <ThemeToggle />

@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient as supabaseCreateClient, SupabaseClient } from '@supabase/supabase-js'
 
 // Lazy-loaded client for browser/public access
 let _supabase: SupabaseClient | null = null
@@ -10,7 +10,7 @@ export function getSupabase(): SupabaseClient {
     if (!url || !key) {
       throw new Error('Supabase configuration missing')
     }
-    _supabase = createClient(url, key)
+    _supabase = supabaseCreateClient(url, key)
   }
   return _supabase
 }
@@ -19,6 +19,9 @@ export function getSupabase(): SupabaseClient {
 export const supabase = typeof window !== 'undefined' 
   ? getSupabase() 
   : (null as unknown as SupabaseClient)
+
+// Client-side create function (alias for getSupabase)
+export const createClient = getSupabase
 
 // Server client with service role for API routes
 export function createServerClient(): SupabaseClient {
@@ -29,7 +32,7 @@ export function createServerClient(): SupabaseClient {
     throw new Error('Supabase server configuration missing. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY')
   }
   
-  return createClient(url, key)
+  return supabaseCreateClient(url, key)
 }
 
 // Helper to check if Supabase is configured
@@ -39,4 +42,3 @@ export function isSupabaseConfigured(): boolean {
     (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
   )
 }
-

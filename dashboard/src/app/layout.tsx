@@ -1,27 +1,23 @@
 import type { Metadata } from 'next'
-import { Inter, JetBrains_Mono, Orbitron } from 'next/font/google'
+import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/components/providers'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { Header } from '@/components/dashboard/Header'
 import { AIAssistant } from '@/components/ai/AIAssistant'
 
-const inter = Inter({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-sans',
   display: 'swap',
+  weight: ['400', '500', '600', '700'],
 })
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
   display: 'swap',
-})
-
-const orbitron = Orbitron({
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
+  weight: ['400', '500'],
 })
 
 export const metadata: Metadata = {
@@ -43,18 +39,16 @@ export default function RootLayout({
     <html 
       lang="en" 
       suppressHydrationWarning 
-      className={`${inter.variable} ${jetbrainsMono.variable} ${orbitron.variable}`}
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="font-sans antialiased">
+      <body className="antialiased">
         <Providers>
           <div className="flex h-screen overflow-hidden bg-background">
             <Sidebar />
             <div className="flex-1 flex flex-col overflow-hidden">
               <Header />
-              <main className="flex-1 overflow-auto gradient-bg grid-pattern relative">
-                <div className="relative z-10">
-                  {children}
-                </div>
+              <main className="flex-1 overflow-auto">
+                {children}
               </main>
               <AIAssistant />
             </div>
