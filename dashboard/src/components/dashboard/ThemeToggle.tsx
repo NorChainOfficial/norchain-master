@@ -21,8 +21,8 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-lg border bg-muted/50">
-        <div className="h-4 w-4 animate-pulse rounded bg-muted-foreground/20" />
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl border bg-muted/50">
+        <div className="h-5 w-5 animate-pulse rounded bg-muted-foreground/20" />
       </div>
     )
   }
@@ -31,52 +31,52 @@ export function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex h-9 w-9 items-center justify-center rounded-lg border bg-muted/50 hover:bg-muted transition-all duration-200 focus-ring"
+          className="flex h-12 w-12 items-center justify-center rounded-xl border bg-muted/50 hover:bg-muted transition-all duration-200 focus-ring"
           aria-label="Toggle theme"
         >
-          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-36">
+      <DropdownMenuContent align="end" className="w-44">
         <DropdownMenuItem
           onClick={() => setTheme('light')}
           className={cn(
-            'flex items-center justify-between cursor-pointer',
+            'flex items-center justify-between cursor-pointer py-3',
             theme === 'light' && 'bg-muted'
           )}
         >
-          <div className="flex items-center gap-2">
-            <Sun className="h-4 w-4" />
-            Light
+          <div className="flex items-center gap-3">
+            <Sun className="h-5 w-5" />
+            <span className="text-base">Light</span>
           </div>
-          {theme === 'light' && <Check className="h-4 w-4 text-primary" />}
+          {theme === 'light' && <Check className="h-5 w-5 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme('dark')}
           className={cn(
-            'flex items-center justify-between cursor-pointer',
+            'flex items-center justify-between cursor-pointer py-3',
             theme === 'dark' && 'bg-muted'
           )}
         >
-          <div className="flex items-center gap-2">
-            <Moon className="h-4 w-4" />
-            Dark
+          <div className="flex items-center gap-3">
+            <Moon className="h-5 w-5" />
+            <span className="text-base">Dark</span>
           </div>
-          {theme === 'dark' && <Check className="h-4 w-4 text-primary" />}
+          {theme === 'dark' && <Check className="h-5 w-5 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTheme('system')}
           className={cn(
-            'flex items-center justify-between cursor-pointer',
+            'flex items-center justify-between cursor-pointer py-3',
             theme === 'system' && 'bg-muted'
           )}
         >
-          <div className="flex items-center gap-2">
-            <Monitor className="h-4 w-4" />
-            System
+          <div className="flex items-center gap-3">
+            <Monitor className="h-5 w-5" />
+            <span className="text-base">System</span>
           </div>
-          {theme === 'system' && <Check className="h-4 w-4 text-primary" />}
+          {theme === 'system' && <Check className="h-5 w-5 text-primary" />}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

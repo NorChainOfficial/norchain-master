@@ -144,35 +144,269 @@ export async function fetchRepoStats(repoName: string): Promise<RepositoryStats 
   }
 }
 
-// Fetch activity feed across all repos
-export async function fetchActivityFeed(repoNames: string[], limit = 20): Promise<Activity[]> {
-  const activities: Activity[] = []
-  
+// GitHub Event types we care about
+interface GitHubEvent {
+  id: string
+  type: string
+  actor: {
+    login: string
+    avatar_url: string
+  }
+  repo: {
+    name: string
+    url: string
+  }
+  payload: {
+    action?: string
+    ref?: string
+    ref_type?: string
+    commits?: Array<{
+      sha: string
+      message: string
+      url: string
+    }>
+    pull_request?: {
+      title: string
+      html_url: string
+      number: number
+      merged?: boolean
+    }
+    issue?: {
+      title: string
+      html_url: string
+      number: number
+    }
+    release?: {
+      tag_name: string
+      name: string
+      html_url: string
+    }
+    comment?: {
+      html_url: string
+      body: string
+    }
+    forkee?: {
+      full_name: string
+      html_url: string
+    }
+  }
+  created_at: string
+}
+
+// Fetch organization events (all activity across all repos)
+export async function fetchOrgEvents(limit = 50): Promise<GitHubEvent[]> {
   try {
-    // Fetch recent commits from each repo
-    const commitPromises = repoNames.slice(0, 5).map(async (repoName) => {
-      const commits = await fetchRepoCommits(repoName, 5)
-      return commits.map((commit): Activity => ({
-        id: commit.sha,
-        type: 'commit',
-        repo: repoName,
-        title: commit.commit.message.split('\n')[0],
-        author: commit.author?.login || commit.commit.author.name,
-        authorAvatar: commit.author?.avatar_url,
-        timestamp: commit.commit.author.date,
-        url: commit.html_url,
-      }))
-    })
+    const response = await fetch(
+      `${GITHUB_API_BASE}/orgs/${ORG_NAME}/events?per_page=${Math.min(limit, 100)}`,
+      { headers: getHeaders(), next: { revalidate: 60 } }
+    )
     
-    const commitResults = await Promise.all(commitPromises)
-    commitResults.forEach((commits) => activities.push(...commits))
+    if (!response.ok) {
+      console.error(`GitHub API error: ${response.status}`)
+      return []
+    }
     
-    // Sort by timestamp and limit
-    activities.sort((a, b) => 
+    return response.json()
+  } catch (error) {
+    console.error('Failed to fetch org events:', error)
+    return []
+  }
+}
+
+// Convert GitHub event to our Activity type
+function eventToActivity(event: GitHubEvent): Activity | Activity[] | null {
+  const repoName = event.repo.name.replace(`${ORG_NAME}/`, '')
+  const baseActivity = {
+    author: event.actor.login,
+    authorAvatar: event.actor.avatar_url,
+    timestamp: event.created_at,
+    repo: repoName,
+  }
+
+  switch (event.type) {
+    case 'PushEvent':
+      // Return all commits as separate activities
+      if (event.payload.commits && event.payload.commits.length > 0) {
+        return event.payload.commits.map((commit, index) => ({
+          ...baseActivity,
+          id: `${event.id}-${index}`,
+          type: 'commit' as const,
+          title: commit.message.split('\n')[0],
+          url: `https://github.com/${ORG_NAME}/${repoName}/commit/${commit.sha}`,
+        }))
+      }
+      return null
+
+    case 'PullRequestEvent':
+      if (event.payload.pull_request) {
+        const action = event.payload.action
+        const pr = event.payload.pull_request
+        let title = `${action === 'opened' ? 'Opened' : action === 'closed' ? (pr.merged ? 'Merged' : 'Closed') : action} PR: ${pr.title}`
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'pr' as const,
+          title,
+          url: pr.html_url,
+        }
+      }
+      return null
+
+    case 'IssuesEvent':
+      if (event.payload.issue) {
+        const action = event.payload.action
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'issue' as const,
+          title: `${action === 'opened' ? 'Opened' : action === 'closed' ? 'Closed' : action} issue: ${event.payload.issue.title}`,
+          url: event.payload.issue.html_url,
+        }
+      }
+      return null
+
+    case 'IssueCommentEvent':
+      if (event.payload.comment && event.payload.issue) {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'issue' as const,
+          title: `Commented on: ${event.payload.issue.title}`,
+          url: event.payload.comment.html_url,
+        }
+      }
+      return null
+
+    case 'ReleaseEvent':
+      if (event.payload.release) {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'release' as const,
+          title: `Released ${event.payload.release.tag_name}: ${event.payload.release.name || 'New release'}`,
+          url: event.payload.release.html_url,
+        }
+      }
+      return null
+
+    case 'CreateEvent':
+      if (event.payload.ref_type === 'branch') {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'commit' as const,
+          title: `Created branch: ${event.payload.ref}`,
+          url: `https://github.com/${ORG_NAME}/${repoName}/tree/${event.payload.ref}`,
+        }
+      } else if (event.payload.ref_type === 'tag') {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'release' as const,
+          title: `Created tag: ${event.payload.ref}`,
+          url: `https://github.com/${ORG_NAME}/${repoName}/releases/tag/${event.payload.ref}`,
+        }
+      } else if (event.payload.ref_type === 'repository') {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'milestone' as const,
+          title: `Created repository: ${repoName}`,
+          url: `https://github.com/${ORG_NAME}/${repoName}`,
+        }
+      }
+      return null
+
+    case 'DeleteEvent':
+      return {
+        ...baseActivity,
+        id: event.id,
+        type: 'commit' as const,
+        title: `Deleted ${event.payload.ref_type}: ${event.payload.ref}`,
+        url: `https://github.com/${ORG_NAME}/${repoName}`,
+      }
+
+    case 'ForkEvent':
+      if (event.payload.forkee) {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'milestone' as const,
+          title: `Forked to ${event.payload.forkee.full_name}`,
+          url: event.payload.forkee.html_url,
+        }
+      }
+      return null
+
+    case 'WatchEvent':
+      return {
+        ...baseActivity,
+        id: event.id,
+        type: 'milestone' as const,
+        title: `Starred ${repoName}`,
+        url: `https://github.com/${ORG_NAME}/${repoName}`,
+      }
+
+    case 'PullRequestReviewEvent':
+      if (event.payload.pull_request) {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'pr' as const,
+          title: `Reviewed PR: ${event.payload.pull_request.title}`,
+          url: event.payload.pull_request.html_url,
+        }
+      }
+      return null
+
+    case 'PullRequestReviewCommentEvent':
+      if (event.payload.pull_request && event.payload.comment) {
+        return {
+          ...baseActivity,
+          id: event.id,
+          type: 'pr' as const,
+          title: `Commented on PR: ${event.payload.pull_request.title}`,
+          url: event.payload.comment.html_url,
+        }
+      }
+      return null
+
+    default:
+      return null
+  }
+}
+
+// Fetch activity feed using GitHub Events API
+export async function fetchActivityFeed(repoNames: string[], limit = 20): Promise<Activity[]> {
+  try {
+    // Use the org events endpoint for comprehensive activity
+    const events = await fetchOrgEvents(100)
+    
+    const activities: Activity[] = []
+    
+    for (const event of events) {
+      const activity = eventToActivity(event)
+      if (activity) {
+        if (Array.isArray(activity)) {
+          activities.push(...activity)
+        } else {
+          activities.push(activity)
+        }
+      }
+    }
+    
+    // Filter by repo names if specified
+    let filteredActivities = activities
+    if (repoNames.length > 0) {
+      filteredActivities = activities.filter(a => repoNames.includes(a.repo))
+    }
+    
+    // Sort by timestamp (newest first) and limit
+    filteredActivities.sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     )
     
-    return activities.slice(0, limit)
+    return filteredActivities.slice(0, limit)
   } catch (error) {
     console.error('Failed to fetch activity feed:', error)
     return []
@@ -205,4 +439,3 @@ export async function fetchAllRepoStats(repoNames: string[]): Promise<Map<string
   
   return statsMap
 }
-

@@ -83,7 +83,7 @@ export function TaskBoard() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="flex flex-col h-full space-y-5">
       {/* Filters */}
       <div className="flex items-center gap-3 flex-wrap">
         <Select
@@ -146,8 +146,8 @@ export function TaskBoard() {
         </div>
       </div>
 
-      {/* Kanban Board */}
-      <div className="grid grid-cols-4 gap-4">
+      {/* Kanban Board - Full height */}
+      <div className="grid grid-cols-4 gap-4 flex-1 min-h-0">
         {columns.map((column) => (
           <TaskColumn
             key={column.id}
@@ -181,7 +181,7 @@ function TaskColumn({ column, tasks, isDragOver, onDragOver, onDragLeave, onDrop
   return (
     <div 
       className={cn(
-        'rounded-2xl p-4 bg-gradient-to-b border transition-all duration-200',
+        'rounded-2xl p-4 bg-gradient-to-b border transition-all duration-200 flex flex-col',
         column.gradient,
         isDragOver && 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.02]'
       )}
@@ -189,7 +189,7 @@ function TaskColumn({ column, tasks, isDragOver, onDragOver, onDragLeave, onDrop
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 shrink-0">
         <div className="flex items-center gap-2.5">
           <div className={cn('h-2.5 w-2.5 rounded-full shrink-0', 
             column.id === 'backlog' && 'bg-slate-400',
@@ -203,7 +203,7 @@ function TaskColumn({ column, tasks, isDragOver, onDragOver, onDragLeave, onDrop
           {tasks.length}
         </Badge>
       </div>
-      <ScrollArea className="h-[480px]">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="space-y-2.5 pr-2">
           {tasks.map((task, index) => (
             <TaskCard 

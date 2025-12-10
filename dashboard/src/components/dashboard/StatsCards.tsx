@@ -76,7 +76,7 @@ export function StatsCards() {
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
       {stats.map((stat, index) => (
         <StatCard key={stat.label} stat={stat} index={index} />
       ))}
@@ -104,7 +104,7 @@ function StatCard({ stat, index }: StatCardProps) {
   return (
     <div
       className={cn(
-        'group relative overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-300',
+        'group relative overflow-hidden rounded-2xl border bg-card p-6 transition-all duration-300',
         'hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20',
         'hover:-translate-y-1 hover:border-primary/20',
         'animate-slide-up opacity-0'
@@ -120,33 +120,33 @@ function StatCard({ stat, index }: StatCardProps) {
 
       {/* Content */}
       <div className="relative">
-        <div className="flex items-start justify-between mb-3">
-          <div className={cn('rounded-xl p-3 shrink-0', stat.bgColor)}>
-            <Icon className={cn('h-6 w-6', stat.textColor)} />
+        <div className="flex items-start justify-between mb-4">
+          <div className={cn('rounded-xl p-3.5 shrink-0', stat.bgColor)}>
+            <Icon className={cn('h-7 w-7', stat.textColor)} />
           </div>
           {stat.trend && (
             <div className={cn(
-              'flex items-center gap-0.5 text-xs font-medium',
+              'flex items-center gap-1 text-sm font-semibold',
               stat.trend.positive ? 'text-emerald-500' : 'text-red-500'
             )}>
               {stat.trend.positive ? (
-                <ArrowUpRight className="h-3 w-3" />
+                <ArrowUpRight className="h-4 w-4" />
               ) : (
-                <ArrowDownRight className="h-3 w-3" />
+                <ArrowDownRight className="h-4 w-4" />
               )}
               {stat.trend.value}%
             </div>
           )}
         </div>
 
-        <div className="space-y-1">
-          <p className="text-2xl font-bold tracking-tight tabular-nums leading-none">
+        <div className="space-y-1.5">
+          <p className="text-3xl font-bold tracking-tight tabular-nums leading-none">
             {stat.value}
           </p>
-          <p className="text-sm font-medium text-muted-foreground leading-tight">
+          <p className="text-base font-semibold text-muted-foreground leading-tight">
             {stat.label}
           </p>
-          <p className="text-xs text-muted-foreground/70 leading-tight">
+          <p className="text-sm text-muted-foreground/70 leading-tight">
             {stat.subtext}
           </p>
         </div>
@@ -161,21 +161,21 @@ export function MiniStats() {
   const { taskStats } = useTasks()
 
   return (
-    <div className="flex items-center gap-6 text-sm">
-      <div className="flex items-center gap-2">
-        <Layers className="h-4 w-4 text-primary" />
+    <div className="flex items-center gap-8 text-base">
+      <div className="flex items-center gap-3">
+        <Layers className="h-5 w-5 text-primary" />
         <span className="text-muted-foreground">Phase</span>
-        <span className="font-semibold tabular-nums">{currentPhase.id}</span>
+        <span className="font-bold tabular-nums">{currentPhase.id}</span>
       </div>
-      <div className="flex items-center gap-2">
-        <TrendingUp className="h-4 w-4 text-emerald-500" />
+      <div className="flex items-center gap-3">
+        <TrendingUp className="h-5 w-5 text-emerald-500" />
         <span className="text-muted-foreground">Progress</span>
-        <span className="font-semibold tabular-nums">{overallProgress}%</span>
+        <span className="font-bold tabular-nums">{overallProgress}%</span>
       </div>
-      <div className="flex items-center gap-2">
-        <ListTodo className="h-4 w-4 text-blue-500" />
+      <div className="flex items-center gap-3">
+        <ListTodo className="h-5 w-5 text-blue-500" />
         <span className="text-muted-foreground">Active</span>
-        <span className="font-semibold tabular-nums">{taskStats.inProgress}</span>
+        <span className="font-bold tabular-nums">{taskStats.inProgress}</span>
       </div>
     </div>
   )

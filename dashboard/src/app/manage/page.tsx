@@ -120,58 +120,58 @@ export default function ManagePage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="flex flex-col h-full p-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between shrink-0">
         <div>
-          <h1 className="text-2xl font-bold">Content Manager</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold">Content Manager</h1>
+          <p className="text-muted-foreground text-lg">
             Add, edit, and delete tasks, phases, repositories, and compliance items
           </p>
         </div>
         <button
           onClick={refreshAll}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border hover:bg-muted transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl border hover:bg-muted transition-colors text-base font-medium"
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-5 w-5" />
           Refresh
         </button>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full max-w-xl grid-cols-4">
-          <TabsTrigger value="tasks" className="flex items-center gap-2">
-            <ListTodo className="h-4 w-4" />
+      {/* Tabs - Flex grow */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+        <TabsList className="grid w-full max-w-2xl grid-cols-4 shrink-0">
+          <TabsTrigger value="tasks" className="flex items-center gap-2 py-3">
+            <ListTodo className="h-5 w-5" />
             Tasks ({tasks.length})
           </TabsTrigger>
-          <TabsTrigger value="phases" className="flex items-center gap-2">
-            <Layers className="h-4 w-4" />
+          <TabsTrigger value="phases" className="flex items-center gap-2 py-3">
+            <Layers className="h-5 w-5" />
             Phases ({phases.length})
           </TabsTrigger>
-          <TabsTrigger value="repos" className="flex items-center gap-2">
-            <GitBranch className="h-4 w-4" />
+          <TabsTrigger value="repos" className="flex items-center gap-2 py-3">
+            <GitBranch className="h-5 w-5" />
             Repos ({repos.length})
           </TabsTrigger>
-          <TabsTrigger value="compliance" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
+          <TabsTrigger value="compliance" className="flex items-center gap-2 py-3">
+            <Shield className="h-5 w-5" />
             Compliance ({compliance.length})
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="tasks" className="mt-6">
+        <TabsContent value="tasks" className="mt-6 flex-1 min-h-0">
           <TasksManager tasks={tasks} onRefresh={refetchTasks} isLoading={tasksLoading} />
         </TabsContent>
 
-        <TabsContent value="phases" className="mt-6">
+        <TabsContent value="phases" className="mt-6 flex-1 min-h-0 overflow-auto">
           <PhasesManager phases={phases} onRefresh={refetchPhases} isLoading={phasesLoading} />
         </TabsContent>
 
-        <TabsContent value="repos" className="mt-6">
+        <TabsContent value="repos" className="mt-6 flex-1 min-h-0">
           <ReposManager repos={repos} onRefresh={refetchRepos} isLoading={reposLoading} />
         </TabsContent>
 
-        <TabsContent value="compliance" className="mt-6">
+        <TabsContent value="compliance" className="mt-6 flex-1 min-h-0 overflow-auto">
           <ComplianceManager items={compliance} onRefresh={refetchCompliance} isLoading={complianceLoading} />
         </TabsContent>
       </Tabs>
@@ -245,19 +245,19 @@ function TasksManager({ tasks, onRefresh, isLoading }: { tasks: Task[]; onRefres
   if (isLoading) return <LoadingState />
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
+    <Card className="h-full flex flex-col">
+      <CardHeader className="pb-3 shrink-0">
         <div className="flex items-center justify-between">
-          <CardTitle>Tasks</CardTitle>
-          <button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90">
-            <Plus className="h-4 w-4" /> Add Task
+          <CardTitle className="text-xl">Tasks</CardTitle>
+          <button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90">
+            <Plus className="h-5 w-5" /> Add Task
           </button>
         </div>
         {selected.size > 0 && (
-          <div className="flex items-center gap-3 mt-3 p-3 bg-muted rounded-lg">
-            <span className="text-sm font-medium">{selected.size} selected</span>
+          <div className="flex items-center gap-4 mt-4 p-4 bg-muted rounded-xl">
+            <span className="font-semibold">{selected.size} selected</span>
             <Select value={bulkStatus} onValueChange={setBulkStatus}>
-              <SelectTrigger className="w-40 h-8"><SelectValue placeholder="Action..." /></SelectTrigger>
+              <SelectTrigger className="w-44 h-9"><SelectValue placeholder="Action..." /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="backlog">→ Backlog</SelectItem>
                 <SelectItem value="in_progress">→ In Progress</SelectItem>
@@ -266,14 +266,14 @@ function TasksManager({ tasks, onRefresh, isLoading }: { tasks: Task[]; onRefres
                 <SelectItem value="delete">🗑️ Delete</SelectItem>
               </SelectContent>
             </Select>
-            <button onClick={() => bulkMutation.mutate({ ids: Array.from(selected), status: bulkStatus })} disabled={!bulkStatus} className="px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md disabled:opacity-50">
+            <button onClick={() => bulkMutation.mutate({ ids: Array.from(selected), status: bulkStatus })} disabled={!bulkStatus} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg disabled:opacity-50">
               Apply
             </button>
           </div>
         )}
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[500px]">
+      <CardContent className="flex-1 min-h-0 overflow-hidden">
+        <ScrollArea className="h-full">
           <table className="w-full text-sm">
             <thead className="border-b">
               <tr className="text-left text-muted-foreground">
@@ -473,17 +473,17 @@ function ReposManager({ repos, onRefresh, isLoading }: { repos: Repository[]; on
   if (isLoading) return <LoadingState />
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
+    <Card className="h-full flex flex-col">
+      <CardHeader className="pb-3 shrink-0">
         <div className="flex items-center justify-between">
-          <CardTitle>Repositories</CardTitle>
-          <button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium">
-            <Plus className="h-4 w-4" /> Add Repo
+          <CardTitle className="text-xl">Repositories</CardTitle>
+          <button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium">
+            <Plus className="h-5 w-5" /> Add Repo
           </button>
         </div>
       </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[500px]">
+      <CardContent className="flex-1 min-h-0 overflow-hidden">
+        <ScrollArea className="h-full">
           <div className="space-y-2">
             {repos.map((repo) => (
               <div key={repo.id} className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50">
