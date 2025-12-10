@@ -1,5 +1,5 @@
 {
-  "name": "@norchain/dashboard-mcp",
+  "name": "@norchainofficial/dashboard-mcp",
   "version": "1.0.0",
   "description": "NorChain PM Dashboard MCP Server - Task, phase, compliance tracking for the NorChain blockchain ecosystem",
   "main": "dist/index.js",
@@ -13,7 +13,7 @@
     "README.md"
   ],
   "publishConfig": {
-    "access": "public"
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "tsc",

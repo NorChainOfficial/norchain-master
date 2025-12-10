@@ -214,13 +214,13 @@ The `norchain-dashboard-sync-agent` automatically:
 
 The dashboard MCP server must be configured in your Claude Code settings.
 
-**Option 1: NPM Package (Recommended)**
+**Option 1: GitHub Package (Recommended)**
 ```json
 {
   "mcpServers": {
     "norchain-dashboard": {
       "command": "npx",
-      "args": ["@norchain/dashboard-mcp"],
+      "args": ["--registry=https://npm.pkg.github.com", "@norchainofficial/dashboard-mcp"],
       "env": {
         "SUPABASE_URL": "${env:SUPABASE_URL}",
         "SUPABASE_SERVICE_ROLE_KEY": "${env:SUPABASE_SERVICE_ROLE_KEY}"
@@ -228,6 +228,11 @@ The dashboard MCP server must be configured in your Claude Code settings.
     }
   }
 }
+```
+
+**Note:** For GitHub Packages, you need to authenticate once:
+```bash
+npm login --registry=https://npm.pkg.github.com --scope=@norchainofficial
 ```
 
 **Option 2: Relative Path (Requires Master repo)**

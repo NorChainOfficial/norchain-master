@@ -2,7 +2,7 @@
   "mcpServers": {
     "norchain-dashboard": {
       "command": "npx",
-      "args": ["@norchain/dashboard-mcp"],
+      "args": ["--registry=https://npm.pkg.github.com", "@norchainofficial/dashboard-mcp"],
       "env": {
         "SUPABASE_URL": "${env:SUPABASE_URL}",
         "SUPABASE_SERVICE_ROLE_KEY": "${env:SUPABASE_SERVICE_ROLE_KEY}"
