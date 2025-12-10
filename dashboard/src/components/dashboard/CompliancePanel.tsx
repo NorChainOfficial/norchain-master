@@ -36,7 +36,7 @@ export function CompliancePanel() {
               <Shield className="h-7 w-7 text-primary" />
             </div>
             <div className="flex flex-col justify-center">
-              <h3 className="font-bold text-primary text-lg leading-tight">{strategy}</h3>
+              <h3 className="font-bold text-primary text-lg leading-tight">{strategy.approach}</h3>
               <p className="text-sm text-muted-foreground leading-tight mt-1">
                 MiCA-safe tokenization approach for EU regulatory compliance
               </p>

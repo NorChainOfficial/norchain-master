@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useCallback } from 'react'
 import { useTasks } from '@/hooks/useTasks'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -19,6 +20,8 @@ import {
   Layers,
   User,
   Sparkles,
+  Loader2,
+  GripVertical,
 } from 'lucide-react'
 import type { Task, TaskStatus, TaskRole } from '@/types'
 
@@ -30,7 +33,54 @@ const columns: { id: TaskStatus; label: string; color: string; gradient: string 
 ]
 
 export function TaskBoard() {
-  const { tasksByStatus, filters, setFilters, roles, taskStats } = useTasks()
+  const { tasksByStatus, filters, setFilters, roles, taskStats, updateTask, isUpdating, isLoading } = useTasks()
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null)
+  const [dragOverColumn, setDragOverColumn] = useState<TaskStatus | null>(null)
+
+  const handleDragStart = useCallback((e: React.DragEvent, task: Task) => {
+    setDraggedTask(task)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', task.id)
+    // Add visual feedback
+    const target = e.target as HTMLElement
+    target.style.opacity = '0.5'
+  }, [])
+
+  const handleDragEnd = useCallback((e: React.DragEvent) => {
+    const target = e.target as HTMLElement
+    target.style.opacity = '1'
+    setDraggedTask(null)
+    setDragOverColumn(null)
+  }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent, columnId: TaskStatus) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverColumn(columnId)
+  }, [])
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverColumn(null)
+  }, [])
+
+  const handleDrop = useCallback((e: React.DragEvent, targetStatus: TaskStatus) => {
+    e.preventDefault()
+    setDragOverColumn(null)
+
+    if (draggedTask && draggedTask.status !== targetStatus) {
+      // Update task status in database
+      updateTask(draggedTask.id, { status: targetStatus })
+    }
+    setDraggedTask(null)
+  }, [draggedTask, updateTask])
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-5">
@@ -43,7 +93,7 @@ export function TaskBoard() {
           }
         >
           <SelectTrigger className="w-[150px] h-9 bg-muted/50">
-            <Layers className="h-4 w-4 mr-2 text-muted-foreground" />
+            <Layers className="h-4 w-4 mr-2 text-muted-foreground shrink-0" />
             <SelectValue placeholder="All Phases" />
           </SelectTrigger>
           <SelectContent>
@@ -63,7 +113,7 @@ export function TaskBoard() {
           }
         >
           <SelectTrigger className="w-[160px] h-9 bg-muted/50">
-            <User className="h-4 w-4 mr-2 text-muted-foreground" />
+            <User className="h-4 w-4 mr-2 text-muted-foreground shrink-0" />
             <SelectValue placeholder="All Roles" />
           </SelectTrigger>
           <SelectContent>
@@ -78,6 +128,12 @@ export function TaskBoard() {
 
         {/* Stats */}
         <div className="ml-auto flex items-center gap-4 text-sm">
+          {isUpdating && (
+            <div className="flex items-center gap-2 text-primary">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="text-xs">Saving...</span>
+            </div>
+          )}
           <div className="flex items-center gap-2 text-muted-foreground">
             <span className="tabular-nums font-medium text-foreground">{taskStats.total}</span>
             <span>tasks</span>
@@ -97,6 +153,12 @@ export function TaskBoard() {
             key={column.id}
             column={column}
             tasks={tasksByStatus[column.id]}
+            isDragOver={dragOverColumn === column.id}
+            onDragOver={(e) => handleDragOver(e, column.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, column.id)}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
           />
         ))}
       </div>
@@ -107,14 +169,26 @@ export function TaskBoard() {
 interface TaskColumnProps {
   column: { id: TaskStatus; label: string; color: string; gradient: string }
   tasks: Task[]
+  isDragOver: boolean
+  onDragOver: (e: React.DragEvent) => void
+  onDragLeave: () => void
+  onDrop: (e: React.DragEvent) => void
+  onDragStart: (e: React.DragEvent, task: Task) => void
+  onDragEnd: (e: React.DragEvent) => void
 }
 
-function TaskColumn({ column, tasks }: TaskColumnProps) {
+function TaskColumn({ column, tasks, isDragOver, onDragOver, onDragLeave, onDrop, onDragStart, onDragEnd }: TaskColumnProps) {
   return (
-    <div className={cn(
-      'rounded-2xl p-4 bg-gradient-to-b border',
-      column.gradient
-    )}>
+    <div 
+      className={cn(
+        'rounded-2xl p-4 bg-gradient-to-b border transition-all duration-200',
+        column.gradient,
+        isDragOver && 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-[1.02]'
+      )}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className={cn('h-2.5 w-2.5 rounded-full shrink-0', 
@@ -132,12 +206,23 @@ function TaskColumn({ column, tasks }: TaskColumnProps) {
       <ScrollArea className="h-[480px]">
         <div className="space-y-2.5 pr-2">
           {tasks.map((task, index) => (
-            <TaskCard key={task.id} task={task} index={index} />
+            <TaskCard 
+              key={task.id} 
+              task={task} 
+              index={index}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+            />
           ))}
           {tasks.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className={cn(
+              'flex flex-col items-center justify-center py-12 text-center border-2 border-dashed rounded-xl transition-colors',
+              isDragOver ? 'border-primary bg-primary/5' : 'border-transparent'
+            )}>
               <Sparkles className="h-8 w-8 text-muted-foreground/30 mb-2" />
-              <p className="text-xs text-muted-foreground">No tasks</p>
+              <p className="text-xs text-muted-foreground">
+                {isDragOver ? 'Drop here' : 'No tasks'}
+              </p>
             </div>
           )}
         </div>
@@ -149,9 +234,11 @@ function TaskColumn({ column, tasks }: TaskColumnProps) {
 interface TaskCardProps {
   task: Task
   index: number
+  onDragStart: (e: React.DragEvent, task: Task) => void
+  onDragEnd: (e: React.DragEvent) => void
 }
 
-export function TaskCard({ task, index }: TaskCardProps) {
+export function TaskCard({ task, index, onDragStart, onDragEnd }: TaskCardProps) {
   const PriorityIcon = task.priority === 'high'
     ? ArrowUp
     : task.priority === 'medium'
@@ -179,8 +266,11 @@ export function TaskCard({ task, index }: TaskCardProps) {
 
   return (
     <Card 
+      draggable
+      onDragStart={(e) => onDragStart(e, task)}
+      onDragEnd={onDragEnd}
       className={cn(
-        'cursor-pointer transition-all duration-200',
+        'cursor-grab active:cursor-grabbing transition-all duration-200',
         'hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20',
         'hover:-translate-y-0.5 hover:border-primary/20',
         'animate-scale-in opacity-0'
@@ -189,13 +279,14 @@ export function TaskCard({ task, index }: TaskCardProps) {
     >
       <CardContent className="p-3.5">
         <div className="flex items-start gap-2.5 mb-3">
+          <GripVertical className="h-4 w-4 text-muted-foreground/50 mt-0.5 shrink-0" />
           <div className={cn('p-1.5 rounded shrink-0', pConfig.bg)}>
             <PriorityIcon className={cn('h-4 w-4', pConfig.color)} />
           </div>
-          <p className="leading-snug flex-1">{task.title}</p>
+          <p className="leading-snug flex-1 text-sm">{task.title}</p>
         </div>
 
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap ml-6">
           <div className={cn('flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium', rConfig.bg, rConfig.color)}>
             {formatRole(task.role)}
           </div>
@@ -228,7 +319,15 @@ function formatRole(role: string): string {
 
 // Compact task list for smaller displays
 export function TaskList() {
-  const { filteredTasks, taskStats } = useTasks()
+  const { filteredTasks, taskStats, isLoading } = useTasks()
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-3">

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { useRouter } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import {
   Dialog,
@@ -15,18 +16,12 @@ import {
   GitBranch,
   ListTodo,
   Shield,
-  FileText,
   ArrowRight,
   CornerDownLeft,
   Hash,
+  Loader2,
   Settings2,
 } from 'lucide-react'
-
-// Import data
-import phasesData from '@/data/phases.json'
-import tasksData from '@/data/tasks.json'
-import reposData from '@/data/repos.json'
-import complianceData from '@/data/compliance.json'
 
 interface SearchResult {
   id: string
@@ -46,6 +41,119 @@ const pages: SearchResult[] = [
   { id: 'manage', title: 'Manage', subtitle: 'Add, edit, delete content', category: 'page', href: '/manage', icon: Settings2 },
 ]
 
+// Fetch search data from API
+async function fetchSearchData(query: string): Promise<SearchResult[]> {
+  if (!query.trim()) return []
+
+  const searchTerm = query.toLowerCase()
+  const results: SearchResult[] = []
+
+  // Fetch all data in parallel
+  const [tasksRes, phasesRes, reposRes, complianceRes] = await Promise.all([
+    fetch('/api/v1/tasks').then(r => r.json()).catch(() => []),
+    fetch('/api/v1/phases').then(r => r.json()).catch(() => []),
+    fetch('/api/v1/repositories').then(r => r.json()).catch(() => []),
+    fetch('/api/v1/compliance').then(r => r.json()).catch(() => ({ checklist: [], tokens: [] })),
+  ])
+
+  // Search pages first
+  pages.forEach((page) => {
+    if (page.title.toLowerCase().includes(searchTerm) || 
+        page.subtitle.toLowerCase().includes(searchTerm)) {
+      results.push(page)
+    }
+  })
+
+  // Search phases
+  phasesRes.forEach((phase: any) => {
+    if (phase.name?.toLowerCase().includes(searchTerm) ||
+        phase.focus?.toLowerCase().includes(searchTerm)) {
+      results.push({
+        id: `phase-${phase.id}`,
+        title: `Phase ${phase.id}: ${phase.name}`,
+        subtitle: phase.focus || '',
+        category: 'phase',
+        href: '/phases',
+        icon: Layers,
+      })
+    }
+    // Search deliverables
+    phase.deliverables?.forEach((d: any) => {
+      if (d.name?.toLowerCase().includes(searchTerm)) {
+        results.push({
+          id: `deliverable-${phase.id}-${d.name}`,
+          title: d.name,
+          subtitle: `Phase ${phase.id} deliverable`,
+          category: 'phase',
+          href: '/phases',
+          icon: Hash,
+        })
+      }
+    })
+  })
+
+  // Search tasks
+  tasksRes.forEach((task: any) => {
+    if (task.title?.toLowerCase().includes(searchTerm) ||
+        task.id?.toLowerCase().includes(searchTerm)) {
+      results.push({
+        id: `task-${task.id}`,
+        title: `${task.id}: ${task.title}`,
+        subtitle: `Phase ${task.phase_id} • ${formatRole(task.role)} • ${task.status}`,
+        category: 'task',
+        href: '/tasks',
+        icon: ListTodo,
+      })
+    }
+  })
+
+  // Search repos
+  reposRes.forEach((repo: any) => {
+    if (repo.name?.toLowerCase().includes(searchTerm) ||
+        repo.description?.toLowerCase().includes(searchTerm)) {
+      results.push({
+        id: `repo-${repo.name}`,
+        title: repo.name,
+        subtitle: repo.description || 'No description',
+        category: 'repo',
+        href: repo.url || '/repos',
+        icon: GitBranch,
+      })
+    }
+  })
+
+  // Search compliance items
+  complianceRes.checklist?.forEach((item: any) => {
+    if (item.item?.toLowerCase().includes(searchTerm)) {
+      results.push({
+        id: `compliance-${item.id}`,
+        title: item.item,
+        subtitle: `${item.category} • ${item.status}`,
+        category: 'compliance',
+        href: '/compliance',
+        icon: Shield,
+      })
+    }
+  })
+
+  // Search tokens
+  complianceRes.tokens?.forEach((token: any) => {
+    if (token.symbol?.toLowerCase().includes(searchTerm) ||
+        token.name?.toLowerCase().includes(searchTerm)) {
+      results.push({
+        id: `token-${token.symbol}`,
+        title: `${token.symbol} - ${token.name}`,
+        subtitle: `${token.type} token • ${token.tradability}`,
+        category: 'compliance',
+        href: '/compliance',
+        icon: Shield,
+      })
+    }
+  })
+
+  return results.slice(0, 20) // Limit results
+}
+
 interface SearchCommandProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -57,112 +165,24 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
   const [selectedIndex, setSelectedIndex] = React.useState(0)
   const inputRef = React.useRef<HTMLInputElement>(null)
 
-  // Build search results
-  const results = React.useMemo(() => {
-    if (!query.trim()) {
-      // Show quick navigation when no query
-      return pages
-    }
-
-    const searchTerm = query.toLowerCase()
-    const matches: SearchResult[] = []
-
-    // Search pages
-    pages.forEach((page) => {
-      if (page.title.toLowerCase().includes(searchTerm) || 
-          page.subtitle.toLowerCase().includes(searchTerm)) {
-        matches.push(page)
-      }
-    })
-
-    // Search phases
-    phasesData.forEach((phase: any) => {
-      if (phase.name.toLowerCase().includes(searchTerm) ||
-          phase.focus.toLowerCase().includes(searchTerm)) {
-        matches.push({
-          id: `phase-${phase.id}`,
-          title: `Phase ${phase.id}: ${phase.name}`,
-          subtitle: phase.focus,
-          category: 'phase',
-          href: '/phases',
-          icon: Layers,
-        })
-      }
-      // Search deliverables
-      phase.deliverables?.forEach((d: any) => {
-        if (d.name.toLowerCase().includes(searchTerm)) {
-          matches.push({
-            id: `deliverable-${phase.id}-${d.name}`,
-            title: d.name,
-            subtitle: `Phase ${phase.id} deliverable`,
-            category: 'phase',
-            href: '/phases',
-            icon: Hash,
-          })
-        }
-      })
-    })
-
-    // Search tasks
-    tasksData.forEach((task: any) => {
-      if (task.title.toLowerCase().includes(searchTerm)) {
-        matches.push({
-          id: `task-${task.id}`,
-          title: task.title,
-          subtitle: `Phase ${task.phase} • ${formatRole(task.role)}`,
-          category: 'task',
-          href: '/tasks',
-          icon: ListTodo,
-        })
-      }
-    })
-
-    // Search repos
-    reposData.forEach((repo: any) => {
-      if (repo.name.toLowerCase().includes(searchTerm) ||
-          repo.description.toLowerCase().includes(searchTerm)) {
-        matches.push({
-          id: `repo-${repo.name}`,
-          title: repo.name,
-          subtitle: repo.description,
-          category: 'repo',
-          href: repo.url,
-          icon: GitBranch,
-        })
-      }
-    })
-
-    // Search compliance items
-    complianceData.checklist.forEach((item: any) => {
-      if (item.item.toLowerCase().includes(searchTerm)) {
-        matches.push({
-          id: `compliance-${item.id}`,
-          title: item.item,
-          subtitle: `${item.category} • ${item.status}`,
-          category: 'compliance',
-          href: '/compliance',
-          icon: Shield,
-        })
-      }
-    })
-
-    // Search tokens
-    complianceData.tokens.forEach((token: any) => {
-      if (token.symbol.toLowerCase().includes(searchTerm) ||
-          token.name.toLowerCase().includes(searchTerm)) {
-        matches.push({
-          id: `token-${token.symbol}`,
-          title: `${token.symbol} - ${token.name}`,
-          subtitle: `${token.type} token • ${token.tradability}`,
-          category: 'compliance',
-          href: '/compliance',
-          icon: Shield,
-        })
-      }
-    })
-
-    return matches.slice(0, 15) // Limit results
+  // Debounced search query
+  const [debouncedQuery, setDebouncedQuery] = React.useState('')
+  
+  React.useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 200)
+    return () => clearTimeout(timer)
   }, [query])
+
+  // Fetch search results
+  const { data: searchResults = [], isLoading } = useQuery({
+    queryKey: ['search', debouncedQuery],
+    queryFn: () => fetchSearchData(debouncedQuery),
+    enabled: debouncedQuery.length > 0,
+    staleTime: 30000,
+  })
+
+  // Combine pages (for empty query) with search results
+  const results = query.trim() ? searchResults : pages
 
   // Reset selected index when results change
   React.useEffect(() => {
@@ -175,6 +195,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       setTimeout(() => inputRef.current?.focus(), 0)
     } else {
       setQuery('')
+      setDebouncedQuery('')
       setSelectedIndex(0)
     }
   }, [open])
@@ -226,13 +247,17 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       <DialogContent className="overflow-hidden p-0 shadow-2xl max-w-2xl">
         {/* Search Input */}
         <div className="flex items-center border-b px-4">
-          <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 text-muted-foreground animate-spin shrink-0" />
+          ) : (
+            <Search className="h-5 w-5 text-muted-foreground shrink-0" />
+          )}
           <input
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search phases, tasks, repositories, compliance..."
+            placeholder="Search tasks, phases, repositories, compliance..."
             className="flex-1 bg-transparent px-4 py-4 text-sm outline-none placeholder:text-muted-foreground"
           />
           <kbd className="hidden sm:inline-flex h-6 items-center gap-1 rounded border bg-muted px-2 font-mono text-[10px] font-medium text-muted-foreground">
@@ -243,12 +268,12 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
         {/* Results */}
         <ScrollArea className="max-h-[400px]">
           <div className="p-2">
-            {results.length === 0 ? (
+            {results.length === 0 && query ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <Search className="h-10 w-10 text-muted-foreground/30 mb-3" />
                 <p className="text-sm text-muted-foreground">No results found</p>
                 <p className="text-xs text-muted-foreground/70 mt-1">
-                  Try searching for phases, tasks, or repositories
+                  Try searching for tasks, phases, or repositories
                 </p>
               </div>
             ) : (
@@ -260,7 +285,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                 )}
                 {query && (
                   <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-                    {results.length} result{results.length !== 1 ? 's' : ''} for &quot;{query}&quot;
+                    {isLoading ? 'Searching...' : `${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}
                   </p>
                 )}
                 <div className="space-y-1">
@@ -364,4 +389,3 @@ export function useSearchCommand() {
 
   return { open, setOpen }
 }
-
