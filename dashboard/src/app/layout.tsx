@@ -26,6 +26,11 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   title: 'NorChain PM Dashboard',
   description: 'Product Manager Dashboard for NorChain Ecosystem',
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
 }
 
 export default function RootLayout({

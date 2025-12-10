@@ -69,11 +69,23 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full w-72 flex-col border-r bg-card/50 backdrop-blur-xl">
-      {/* Logo - Larger */}
+      {/* Logo - Using brand image */}
       <div className="flex h-20 items-center gap-4 border-b px-6">
-        <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25 shrink-0">
-          <span className="text-xl font-bold text-white font-display">N</span>
-          <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-card bg-emerald-500" />
+        <div className="relative shrink-0">
+          <img 
+            src="/logo.png" 
+            alt="NorChain" 
+            className="h-14 w-14 object-contain drop-shadow-lg"
+            onError={(e) => {
+              // Fallback to text if image not found
+              e.currentTarget.style.display = 'none'
+              e.currentTarget.nextElementSibling?.classList.remove('hidden')
+            }}
+          />
+          <div className="hidden h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25">
+            <span className="text-2xl font-bold text-white font-display">N</span>
+          </div>
+          <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card bg-emerald-500" />
         </div>
         <div className="flex flex-col justify-center min-w-0">
           <span className="text-lg font-bold tracking-tight leading-tight font-display">NorChain</span>
