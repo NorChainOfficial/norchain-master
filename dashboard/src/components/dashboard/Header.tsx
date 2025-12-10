@@ -6,6 +6,8 @@ import { SearchCommand, useSearchCommand } from './SearchCommand'
 import { Badge } from '@/components/ui/badge'
 import { usePhases } from '@/hooks/usePhases'
 import { useTasks } from '@/hooks/useTasks'
+import { OrgSwitcher } from '@/components/layout/OrgSwitcher'
+import { ProjectSwitcher } from '@/components/layout/ProjectSwitcher'
 import {
   Layers,
   TrendingUp,
@@ -59,38 +61,21 @@ export function Header() {
             </button>
           </div>
 
-          {/* Right - Quick Stats & Actions */}
-          <div className="flex items-center gap-5 shrink-0">
-            {/* Quick Stats - Hidden on smaller screens */}
-            <div className="hidden xl:flex items-center gap-5">
-              <QuickStat
-                icon={Layers}
-                label="Phase"
-                value={currentPhase.id.toString()}
-                color="text-primary"
-              />
+          {/* Right - Org/Project Switchers & Actions */}
+          <div className="flex items-center gap-4 shrink-0">
+            {/* Organization & Project Switchers */}
+            <div className="hidden lg:flex items-center gap-3">
+              <OrgSwitcher />
               <div className="h-8 w-px bg-border" />
-              <QuickStat
-                icon={TrendingUp}
-                label="Progress"
-                value={`${overallProgress}%`}
-                color="text-emerald-500"
-              />
-              <div className="h-8 w-px bg-border" />
-              <QuickStat
-                icon={Clock}
-                label="Active"
-                value={taskStats.inProgress.toString()}
-                color="text-amber-500"
-              />
+              <ProjectSwitcher />
             </div>
 
             {/* Actions */}
             <div className="flex items-center gap-3">
               {/* Notifications */}
-              <button className="relative flex h-12 w-12 items-center justify-center rounded-xl border bg-muted/50 hover:bg-muted transition-all duration-200">
+              <button className="relative flex h-11 w-11 items-center justify-center rounded-xl border bg-muted/50 hover:bg-muted transition-all duration-200">
                 <Bell className="h-5 w-5" />
-                <span className="absolute -top-1.5 -right-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-lg shadow-primary/20">
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-lg shadow-primary/20">
                   3
                 </span>
               </button>

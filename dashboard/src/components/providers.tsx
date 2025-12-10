@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { useState } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { ProjectProvider } from '@/contexts/ProjectContext'
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -26,7 +27,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        <TooltipProvider>{children}</TooltipProvider>
+        <ProjectProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </ProjectProvider>
       </ThemeProvider>
     </QueryClientProvider>
   )

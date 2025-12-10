@@ -4,6 +4,7 @@ import './globals.css'
 import { Providers } from '@/components/providers'
 import { Sidebar } from '@/components/dashboard/Sidebar'
 import { Header } from '@/components/dashboard/Header'
+import { AIAssistant } from '@/components/ai/AIAssistant'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -55,6 +56,7 @@ export default function RootLayout({
                   {children}
                 </div>
               </main>
+              <AIAssistant />
             </div>
           </div>
         </Providers>
